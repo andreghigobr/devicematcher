@@ -14,6 +14,19 @@ public class DeviceProfile {
     private final LocalDate createdAt;
     private LocalDate lastUpdatedAt;
 
+    public static final DeviceProfile UNKNOWN = new DeviceProfile(
+            UUID.fromString("00000000-0000-0000-0000-000000000000"),
+            0L,
+            "unknown",
+            "unknown",
+            "unknown",
+            "unknown",
+            "unknown"
+    );
+
+    // unknown version string
+    public static final String UNKNOWN_VERSION = "unknown";
+
     // --------------------------------------------
     // Constructors
     // --------------------------------------------
@@ -103,7 +116,6 @@ public class DeviceProfile {
         return deviceId.hashCode();
     }
 
-    // toString
     @Override
     public String toString() {
         return "DeviceProfile{" +

@@ -1,5 +1,6 @@
 package com.experian.devicematcher.dto;
 
+import com.experian.devicematcher.domain.DeviceProfile;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -26,6 +27,17 @@ public class DeviceProfileDTO {
 
     @JsonProperty("browserVersion")
     private final String browserVersion;
+
+    public static DeviceProfileDTO from(DeviceProfile deviceProfile) {
+        return new DeviceProfileDTO(
+                deviceProfile.getDeviceId(),
+                deviceProfile.getHitCount(),
+                deviceProfile.getOsName(),
+                deviceProfile.getOsVersion(),
+                deviceProfile.getBrowserName(),
+                deviceProfile.getBrowserVersion()
+        );
+    }
 
     public DeviceProfileDTO(UUID deviceId, Long hitCount, String osName, String osVersion, String browserName, String browserVersion) {
         this.deviceId = deviceId;

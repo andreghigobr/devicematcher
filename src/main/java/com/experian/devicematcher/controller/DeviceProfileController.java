@@ -1,52 +1,82 @@
 package com.experian.devicematcher.controller;
 
+import com.experian.devicematcher.domain.DeviceProfile;
+import com.experian.devicematcher.dto.DeviceProfileDTO;
+import com.experian.devicematcher.dto.DeviceProfilesDTO;
+import com.experian.devicematcher.service.DeviceProfileService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.ArrayList;
 
 @RestController
 @RequestMapping("/v1/devices")
 public class DeviceProfileController {
     private static final Logger logger = LoggerFactory.getLogger(DeviceProfileController.class);
 
+    private DeviceProfileService service;
+
+    @Autowired
+    public DeviceProfileController(DeviceProfileService service) {
+        this.service = service;
+    }
+
     @PostMapping("/")
-    public String matchDeviceProfile(
+    public ResponseEntity<DeviceProfileDTO> matchDeviceProfile(
             @RequestHeader(value = "User-Agent", required = true) String userAgent
     ) {
         logger.info("Receiving Match Device Request | userAgent={}", userAgent);
 
-        // Logic to create a device profile
-        return "Device profile created";
+        var device = service.matchDevice(userAgent);
+
+        var response = DeviceProfileDTO.from(device);
+        return ResponseEntity.status(HttpStatus.OK).body(response);
     }
 
     @GetMapping("/{deviceId}")
-    public String getDeviceProfileById(
+    public ResponseEntity<DeviceProfileDTO> getDeviceProfileById(
             @PathVariable(value = "deviceId", required = true) String deviceId
     ) {
         logger.info("Receiving Get Device Profile By Id Request | deviceId={}", deviceId);
 
-        // Logic to get a device profile by ID
-        return "Device profile retrieved";
+        var device = service.getDeviceById(deviceId);
+
+        if (device.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        }
+
+        var response = DeviceProfileDTO.from(device.get());
+        return ResponseEntity.ok(response);
     }
 
     @GetMapping("/")
-    public String getDeviceProfiles(
+    public ResponseEntity<DeviceProfilesDTO> getDeviceProfiles(
             @RequestHeader(value = "os-name", required = true) String osName
     ) {
         logger.info("Receiving Get Device Profiles Request | osName={}", osName);
 
-        // Logic to get all device profiles
-        return "All device profiles retrieved";
+        var devices = service.getDevicesByOS(osName);
+
+        if (devices.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        }
+
+        var response = DeviceProfilesDTO.from(devices);
+        return ResponseEntity.ok(response);
     }
 
     @DeleteMapping("/{deviceId}")
-    public String deleteDeviceProfile(
+    public ResponseEntity<Object> deleteDeviceProfile(
             @PathVariable(value = "deviceId", required = true) String deviceId
     ) {
         logger.info("Receiving Delete Device Profile Request | deviceId={}", deviceId);
 
-        // Logic to delete a device profile
+        service.deleteDeviceById(deviceId);
 
-        return "Device profile deleted";
+        return ResponseEntity.ok().build();
     }
 }
