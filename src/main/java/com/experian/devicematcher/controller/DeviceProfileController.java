@@ -3,6 +3,8 @@ package com.experian.devicematcher.controller;
 import com.experian.devicematcher.domain.DeviceProfile;
 import com.experian.devicematcher.dto.DeviceProfileDTO;
 import com.experian.devicematcher.dto.DeviceProfilesDTO;
+import com.experian.devicematcher.exceptions.DeviceProfileMatchException;
+import com.experian.devicematcher.exceptions.DeviceProfileNotFoundException;
 import com.experian.devicematcher.service.DeviceProfileService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -28,7 +30,7 @@ public class DeviceProfileController {
     @PostMapping("/")
     public ResponseEntity<DeviceProfileDTO> matchDeviceProfile(
             @RequestHeader(value = "User-Agent", required = true) String userAgent
-    ) {
+    ) throws Exception {
         logger.info("Receiving Match Device Request | userAgent={}", userAgent);
 
         var device = service.matchDevice(userAgent);
@@ -40,7 +42,7 @@ public class DeviceProfileController {
     @GetMapping("/{deviceId}")
     public ResponseEntity<DeviceProfileDTO> getDeviceProfileById(
             @PathVariable(value = "deviceId", required = true) String deviceId
-    ) {
+    ) throws Exception {
         logger.info("Receiving Get Device Profile By Id Request | deviceId={}", deviceId);
 
         var device = service.getDeviceById(deviceId);
@@ -56,7 +58,7 @@ public class DeviceProfileController {
     @GetMapping("/")
     public ResponseEntity<DeviceProfilesDTO> getDeviceProfiles(
             @RequestHeader(value = "os-name", required = true) String osName
-    ) {
+    ) throws Exception {
         logger.info("Receiving Get Device Profiles Request | osName={}", osName);
 
         var devices = service.getDevicesByOS(osName);
@@ -72,7 +74,7 @@ public class DeviceProfileController {
     @DeleteMapping("/{deviceId}")
     public ResponseEntity<Object> deleteDeviceProfile(
             @PathVariable(value = "deviceId", required = true) String deviceId
-    ) {
+    ) throws Exception {
         logger.info("Receiving Delete Device Profile Request | deviceId={}", deviceId);
 
         service.deleteDeviceById(deviceId);

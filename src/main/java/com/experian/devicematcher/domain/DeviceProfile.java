@@ -24,7 +24,6 @@ public class DeviceProfile {
             "unknown"
     );
 
-    // unknown version string
     public static final String UNKNOWN_VERSION = "unknown";
 
     // --------------------------------------------
@@ -100,6 +99,14 @@ public class DeviceProfile {
         return userAgent;
     }
 
+    public LocalDate getCreatedAt() {
+        return createdAt;
+    }
+
+    public LocalDate getLastUpdatedAt() {
+        return lastUpdatedAt;
+    }
+
     // --------------------------------------------
     // Interfaces
     // --------------------------------------------
@@ -126,6 +133,8 @@ public class DeviceProfile {
                 ", browserName='" + browserName + '\'' +
                 ", browserVersion='" + browserVersion + '\'' +
                 ", userAgent='" + userAgent + '\'' +
+                ", createdAt=" + createdAt +
+                ", lastUpdatedAt=" + lastUpdatedAt +
                 '}';
     }
 }
