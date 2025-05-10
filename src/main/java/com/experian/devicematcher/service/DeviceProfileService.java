@@ -42,29 +42,29 @@ public class DeviceProfileService {
 
     public DeviceProfile matchDevice(String userAgent) throws DeviceProfileMatchException {
         try {
-            logger.info("Matching Device | userAgent={}", userAgent);
+            logger.info("Matching Device by User-Agent | userAgent={}", userAgent);
 
             var ua = userAgentParser.parse(userAgent);
 
-            var device = repository.findDevicesByOSName(ua.getOsName()).stream()
-                    .filter(d -> d.getOsVersion().equals(ua.getOsVersion()))
-                    .filter(d -> d.getBrowserName().equals(ua.getBrowserName()))
-                    .filter(d -> d.getBrowserVersion().equals(ua.getBrowserVersion()))
+            var device = repository.findDeviceByUserAgent(ua).stream()
                     .findFirst()
-                    .orElse(DeviceProfile.from(ua));
+                    .orElseGet(() -> {
+                        var d = DeviceProfile.from(ua);
+                        repository.persistDevice(d);
+                        return d;
+                    });
 
-            device.incrementHitCount();
-            repository.persistDevice(device);
-
-            return device;
+            long hitCount = repository.incrementHitCount(device.getDeviceId());
+            return device.withHitCount(hitCount);
         } catch (Exception ex) {
+            logger.error("Error matching device by User-Agent: {}", ex.getMessage(), ex);
             throw new DeviceProfileMatchException(userAgent, ex);
         }
     }
 
     public List<DeviceProfile> getDevicesByOS(String osName) throws DeviceProfileNotFoundException {
         try {
-            logger.info("Getting Device By OS | osName={}", osName);
+            logger.info("Getting Device By OS name | osName={}", osName);
             return repository.findDevicesByOSName(osName.toLowerCase());
         } catch (Exception ex) {
             throw new DeviceProfileNotFoundException(ex);
@@ -73,7 +73,7 @@ public class DeviceProfileService {
 
     public void deleteDeviceById(String deviceId) throws DeviceProfileException {
         try {
-            logger.info("Getting Device | deviceId={}", deviceId);
+            logger.info("Deleting Device By ID | deviceId={}", deviceId);
             repository.deleteDeviceById(deviceId);
         } catch (Exception ex) {
             throw new DeviceProfileException(deviceId, ex);

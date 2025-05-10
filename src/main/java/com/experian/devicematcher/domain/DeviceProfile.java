@@ -1,11 +1,10 @@
 package com.experian.devicematcher.domain;
 
-import java.time.LocalDate;
 import java.util.UUID;
 
-public class DeviceProfile {
+public final class DeviceProfile {
     private final String deviceId;
-    private Long hitCount;
+    private final Long hitCount;
     private final String osName;
     private final String osVersion;
     private final String browserName;
@@ -35,13 +34,6 @@ public class DeviceProfile {
                 userAgent.getBrowserName().toLowerCase(),
                 userAgent.getBrowserVersion().toLowerCase()
         );
-    }
-
-    // --------------------------------------------
-    // Domain Logic
-    // --------------------------------------------
-    public void incrementHitCount() {
-        this.hitCount++;
     }
 
     // --------------------------------------------
@@ -97,5 +89,16 @@ public class DeviceProfile {
                 ", browserName='" + browserName + '\'' +
                 ", browserVersion='" + browserVersion + '\'' +
                 '}';
+    }
+
+    public DeviceProfile withHitCount(long hitCount) {
+        return new DeviceProfile(
+          deviceId,
+          hitCount,
+          osName,
+          osVersion,
+          browserName,
+          browserVersion
+        );
     }
 }

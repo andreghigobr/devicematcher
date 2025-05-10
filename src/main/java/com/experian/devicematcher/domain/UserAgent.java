@@ -5,18 +5,16 @@ public class UserAgent {
     private final String osVersion;
     private final String browserName;
     private final String browserVersion;
-    private final String rawUserAgent;
 
-    public UserAgent(String osName, String osVersion, String browserName, String browserVersion, String rawUserAgent) {
+    public UserAgent(String osName, String osVersion, String browserName, String browserVersion) {
         this.osName = osName;
         this.osVersion = osVersion;
         this.browserName = browserName;
         this.browserVersion = browserVersion;
-        this.rawUserAgent = rawUserAgent;
     }
 
-    public static UserAgent create(String osName, String osVersion, String browserName, String browserVersion, String rawUserAgent) {
-        return new UserAgent(osName, osVersion, browserName, browserVersion, rawUserAgent);
+    public static UserAgent create(String osName, String osVersion, String browserName, String browserVersion) {
+        return new UserAgent(osName, osVersion, browserName, browserVersion);
     }
 
     public String getOsName() {
@@ -35,10 +33,6 @@ public class UserAgent {
         return browserVersion;
     }
 
-    public String getRawUserAgent() {
-        return rawUserAgent;
-    }
-
     @Override
     public String toString() {
         return "UserAgent{" +
@@ -46,7 +40,6 @@ public class UserAgent {
                 ", osVersion='" + osVersion + '\'' +
                 ", browserName='" + browserName + '\'' +
                 ", browserVersion='" + browserVersion + '\'' +
-                ", rawUserAgent='" + rawUserAgent + '\'' +
                 '}';
     }
 }

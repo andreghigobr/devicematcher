@@ -39,8 +39,7 @@ public class UserAgentDeviceRegexParser implements UserAgentDeviceParser {
                 osName == null ? "" : osName.toLowerCase(),
                 osVersion == null ? "" : osVersion.toLowerCase(),
                 browserName == null ? "" : browserName.toLowerCase(),
-                browserVersion == null ? "" : browserVersion.toLowerCase(),
-                userAgent
+                browserVersion == null ? "" : browserVersion.toLowerCase()
             );
         } catch (Exception ex) {
             logger.error("Error parsing User-Agent string: {}", ex.getMessage(), ex);

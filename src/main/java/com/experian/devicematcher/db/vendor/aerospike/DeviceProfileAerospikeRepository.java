@@ -1,8 +1,6 @@
 package com.experian.devicematcher.db.vendor.aerospike;
 
-import com.aerospike.client.Bin;
-import com.aerospike.client.IAerospikeClient;
-import com.aerospike.client.Key;
+import com.aerospike.client.*;
 import com.aerospike.client.Record;
 import com.aerospike.client.policy.Policy;
 import com.aerospike.client.policy.QueryPolicy;
@@ -10,15 +8,19 @@ import com.aerospike.client.policy.WritePolicy;
 import com.aerospike.client.query.RecordSet;
 import com.aerospike.client.query.Statement;
 import com.experian.devicematcher.domain.DeviceProfile;
+import com.experian.devicematcher.domain.UserAgent;
 import com.experian.devicematcher.repository.DeviceProfileRepository;
 import com.aerospike.client.query.Filter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
@@ -32,14 +34,25 @@ public class DeviceProfileAerospikeRepository implements DeviceProfileRepository
     @Value("${aerospike.set}")
     private String setName;
 
-    @Value("${aerospike.max-records}")
-    private Long maxRecords;
+    private final Policy defaultPolicy;
+
+    private final WritePolicy writePolicy;
+
+    private final QueryPolicy queryPolicy;
 
     private final IAerospikeClient client;
 
     @Autowired
-    public DeviceProfileAerospikeRepository(IAerospikeClient client) {
+    public DeviceProfileAerospikeRepository(
+            IAerospikeClient client,
+            @Qualifier("aerospikeDefaultPolicy") Policy policy,
+            @Qualifier("aerospikeWritePolicy") WritePolicy writePolicy,
+            @Qualifier("aerospikeQueryPolicy") QueryPolicy queryPolicy
+    ) {
         this.client = client;
+        this.defaultPolicy = policy;
+        this.writePolicy = writePolicy;
+        this.queryPolicy = queryPolicy;
     }
 
     @Override
@@ -47,26 +60,24 @@ public class DeviceProfileAerospikeRepository implements DeviceProfileRepository
         logger.info("Retrieving device by ID from Aerospike | deviceId={}", deviceId);
 
         Key key = new Key(namespace, setName, deviceId);
-        Policy policy = new Policy();
-        Record record = client.get(policy, key);
+        Record record = client.get(defaultPolicy, key);
 
-        if (record != null) {
-            logger.info("Device found | deviceId={}", deviceId);
+        if (record == null) {
+            logger.warn("Device not found | deviceId={}", deviceId);
+            return Optional.empty();
+        }
 
-            var device = new DeviceProfile(
+        logger.info("Device found | deviceId={}", deviceId);
+        var device = new DeviceProfile(
                 record.getString("deviceId"),
                 record.getLong("hitCount"),
                 record.getString("osName"),
                 record.getString("osVersion"),
                 record.getString("browserName"),
                 record.getString("browserVersion")
-            );
+        );
 
-            return Optional.of(device);
-        }
-
-        logger.info("Device not found | deviceId={}", deviceId);
-        return Optional.empty();
+        return Optional.of(device);
     }
 
     @Override
@@ -78,11 +89,8 @@ public class DeviceProfileAerospikeRepository implements DeviceProfileRepository
         statement.setSetName(setName);
         statement.setFilter(Filter.equal("osName", osName));
 
-        QueryPolicy policy = new QueryPolicy();
-        policy.setMaxRecords(maxRecords);
-
-        try (RecordSet recordSet = client.query(policy, statement)) {
-            List<DeviceProfile> devices = new ArrayList<>();
+        List<DeviceProfile> devices = new ArrayList<>();
+        try (RecordSet recordSet = client.query(queryPolicy, statement)) {
             while (recordSet.next()) {
                 Record record = recordSet.getRecord();
                 var device = new DeviceProfile(
@@ -95,21 +103,53 @@ public class DeviceProfileAerospikeRepository implements DeviceProfileRepository
                 );
                 devices.add(device);
             }
-            return devices;
-        } catch (Exception e) {
-            logger.error("Error retrieving devices by OS | osName={} error={}", osName, e.getMessage());
+        } catch (Exception ex) {
+            logger.error("Error retrieving devices by OS | osName={} error={}", osName, ex.getMessage());
+            throw ex;
         }
 
-        return List.of();
+        return Collections.unmodifiableList(devices);
+    }
+
+    @Override
+    public List<DeviceProfile> findDeviceByUserAgent(UserAgent userAgent) {
+        logger.info("Retrieving devices by User Agent from Aerospike | userAgent={}", userAgent);
+
+        Statement statement = new Statement();
+        statement.setNamespace(namespace);
+        statement.setSetName(setName);
+        statement.setFilter(Filter.equal("osName", userAgent.getOsName()));
+        statement.setFilter(Filter.equal("osVersion", userAgent.getOsVersion()));
+        statement.setFilter(Filter.equal("browserName", userAgent.getBrowserName()));
+        statement.setFilter(Filter.equal("browserVersion", userAgent.getBrowserVersion()));
+
+        List<DeviceProfile> devices = new ArrayList<>();
+        try (RecordSet recordSet = client.query(queryPolicy, statement)) {
+            while (recordSet.next()) {
+                Record record = recordSet.getRecord();
+                var device = new DeviceProfile(
+                        record.getString("deviceId"),
+                        record.getLong("hitCount"),
+                        record.getString("osName"),
+                        record.getString("osVersion"),
+                        record.getString("browserName"),
+                        record.getString("browserVersion")
+                );
+                devices.add(device);
+            }
+        } catch (Exception ex) {
+            logger.error("Error retrieving devices by User Agent | userAgent={} error={}", userAgent, ex.getMessage());
+            throw ex;
+        }
+
+        return Collections.unmodifiableList(devices);
     }
 
     @Override
     public void deleteDeviceById(String deviceId) {
         logger.info("Deleting device by ID from Aerospike | deviceId={}", deviceId);
         Key key = new Key(namespace, setName, deviceId);
-        WritePolicy policy = new WritePolicy();
-
-        boolean isDeleted = client.delete(policy, key);
+        boolean isDeleted = client.delete(writePolicy, key);
 
         if (isDeleted) {
             logger.info("Device deleted successfully | deviceId={}", deviceId);
@@ -122,7 +162,6 @@ public class DeviceProfileAerospikeRepository implements DeviceProfileRepository
     public void persistDevice(DeviceProfile device) {
         logger.info("Persisting device profile into Aerospike | device={}", device);
         Key key = new Key(namespace, setName, device.getDeviceId());
-        WritePolicy policy = new WritePolicy();
 
         Bin[] bins = new Bin[]{
             new Bin("deviceId", device.getDeviceId()),
@@ -133,6 +172,19 @@ public class DeviceProfileAerospikeRepository implements DeviceProfileRepository
             new Bin("browserVersion", device.getBrowserVersion()),
         };
 
-        client.put(policy, key, bins);
+        client.put(writePolicy, key, bins);
+    }
+
+    @Override
+    public long incrementHitCount(String deviceId) {
+        logger.info("Incrementing device hit count on Aerospike | deviceId={}", deviceId);
+
+        Key key = new Key(namespace, setName, deviceId);
+        Record record = client.operate(writePolicy, key, Operation.add(new Bin("hitCount", 1L)));
+
+        long updatedHitCount = record.getLong("hitCount");
+        logger.info("Device HitCount updated | deviceId={} | updatedHitCount={}", deviceId, updatedHitCount);
+
+        return updatedHitCount;
     }
 }

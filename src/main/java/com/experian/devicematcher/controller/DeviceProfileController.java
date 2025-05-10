@@ -22,7 +22,7 @@ public class DeviceProfileController {
         this.service = service;
     }
 
-    @PostMapping("/")
+    @PostMapping
     public ResponseEntity<DeviceProfileDTO> matchDeviceProfile(
             @RequestHeader(value = "User-Agent", required = true) String userAgent
     ) throws Exception {
@@ -50,7 +50,7 @@ public class DeviceProfileController {
         return ResponseEntity.ok(response);
     }
 
-    @GetMapping("/")
+    @GetMapping
     public ResponseEntity<DeviceProfilesDTO> getDeviceProfiles(
             @RequestHeader(value = "os-name", required = true) String osName
     ) throws Exception {
@@ -73,7 +73,6 @@ public class DeviceProfileController {
         logger.info("Receiving Delete Device Profile Request | deviceId={}", deviceId);
 
         service.deleteDeviceById(deviceId);
-
-        return ResponseEntity.ok().build();
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 }
