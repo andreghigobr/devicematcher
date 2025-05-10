@@ -11,7 +11,7 @@ import java.util.UUID;
 @JsonInclude(JsonInclude.Include.NON_EMPTY)
 public class DeviceProfileDTO {
     @JsonProperty("deviceId")
-    private final UUID deviceId;
+    private final String deviceId;
 
     @JsonProperty("hitCount")
     private final Long hitCount;
@@ -39,7 +39,7 @@ public class DeviceProfileDTO {
         );
     }
 
-    public DeviceProfileDTO(UUID deviceId, Long hitCount, String osName, String osVersion, String browserName, String browserVersion) {
+    public DeviceProfileDTO(String deviceId, Long hitCount, String osName, String osVersion, String browserName, String browserVersion) {
         this.deviceId = deviceId;
         this.hitCount = hitCount;
         this.osName = osName;
@@ -48,7 +48,7 @@ public class DeviceProfileDTO {
         this.browserVersion = browserVersion;
     }
 
-    public UUID getDeviceId() {
+    public String getDeviceId() {
         return deviceId;
     }
 

@@ -4,60 +4,37 @@ import java.time.LocalDate;
 import java.util.UUID;
 
 public class DeviceProfile {
-    private final UUID deviceId;
+    private final String deviceId;
     private Long hitCount;
     private final String osName;
     private final String osVersion;
     private final String browserName;
     private final String browserVersion;
-    private final String userAgent;
-    private final LocalDate createdAt;
-    private LocalDate lastUpdatedAt;
-
-    public static final DeviceProfile UNKNOWN = new DeviceProfile(
-            UUID.fromString("00000000-0000-0000-0000-000000000000"),
-            0L,
-            "unknown",
-            "unknown",
-            "unknown",
-            "unknown",
-            "unknown"
-    );
-
-    public static final String UNKNOWN_VERSION = "unknown";
 
     // --------------------------------------------
     // Constructors
     // --------------------------------------------
-    public DeviceProfile(UUID deviceId, Long hitCount, String osName, String osVersion, String browserName, String browserVersion, String userAgent) {
+    public DeviceProfile(String deviceId, Long hitCount, String osName, String osVersion, String browserName, String browserVersion) {
         this.deviceId = deviceId;
         this.hitCount = hitCount;
         this.osName = osName;
         this.osVersion = osVersion;
         this.browserName = browserName;
         this.browserVersion = browserVersion;
-        this.userAgent = userAgent;
-        this.createdAt = LocalDate.now();
-        this.lastUpdatedAt = null;
-    }
-
-    public DeviceProfile(String osName, String osVersion, String browserName, String browserVersion, String userAgent) {
-        this.deviceId = UUID.randomUUID();
-        this.hitCount = 0L;
-        this.osName = osName;
-        this.osVersion = osVersion;
-        this.browserName = browserName;
-        this.browserVersion = browserVersion;
-        this.userAgent = userAgent;
-        this.createdAt = LocalDate.now();
-        this.lastUpdatedAt = null;
     }
 
     // --------------------------------------------
     // Factory Method
     // --------------------------------------------
-    public static DeviceProfile create(String osName, String osVersion, String browserName, String browserVersion, String userAgent) {
-        return new DeviceProfile(osName, osVersion, browserName, browserVersion, userAgent);
+    public static DeviceProfile from(UserAgent userAgent) {
+        return new DeviceProfile(
+                UUID.randomUUID().toString(),
+                0L,
+                userAgent.getOsName().toLowerCase(),
+                userAgent.getOsVersion().toLowerCase(),
+                userAgent.getBrowserName().toLowerCase(),
+                userAgent.getBrowserVersion().toLowerCase()
+        );
     }
 
     // --------------------------------------------
@@ -65,13 +42,12 @@ public class DeviceProfile {
     // --------------------------------------------
     public void incrementHitCount() {
         this.hitCount++;
-        this.lastUpdatedAt = LocalDate.now();
     }
 
     // --------------------------------------------
     // Getters
     // --------------------------------------------
-    public UUID getDeviceId() {
+    public String getDeviceId() {
         return deviceId;
     }
 
@@ -93,18 +69,6 @@ public class DeviceProfile {
 
     public String getBrowserVersion() {
         return browserVersion;
-    }
-
-    public String getUserAgent() {
-        return userAgent;
-    }
-
-    public LocalDate getCreatedAt() {
-        return createdAt;
-    }
-
-    public LocalDate getLastUpdatedAt() {
-        return lastUpdatedAt;
     }
 
     // --------------------------------------------
@@ -132,9 +96,6 @@ public class DeviceProfile {
                 ", osVersion='" + osVersion + '\'' +
                 ", browserName='" + browserName + '\'' +
                 ", browserVersion='" + browserVersion + '\'' +
-                ", userAgent='" + userAgent + '\'' +
-                ", createdAt=" + createdAt +
-                ", lastUpdatedAt=" + lastUpdatedAt +
                 '}';
     }
 }

@@ -1,10 +1,7 @@
 package com.experian.devicematcher.controller;
 
-import com.experian.devicematcher.domain.DeviceProfile;
 import com.experian.devicematcher.dto.DeviceProfileDTO;
 import com.experian.devicematcher.dto.DeviceProfilesDTO;
-import com.experian.devicematcher.exceptions.DeviceProfileMatchException;
-import com.experian.devicematcher.exceptions.DeviceProfileNotFoundException;
 import com.experian.devicematcher.service.DeviceProfileService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -12,8 +9,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.ArrayList;
 
 @RestController
 @RequestMapping("/v1/devices")
