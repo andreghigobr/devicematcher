@@ -10,13 +10,13 @@ import org.springframework.context.annotation.Configuration;
 
 @Configuration
 public class AerospikeConfig {
+    private static final Logger logger = LoggerFactory.getLogger(AerospikeConfig.class);
+
     @Value("${aerospike.host}")
     private String hostname;
 
     @Value("${aerospike.port}")
     private Integer port;
-
-    private static final Logger logger = LoggerFactory.getLogger(AerospikeConfig.class);
 
     @Bean
     public IAerospikeClient aerospikeClient() {

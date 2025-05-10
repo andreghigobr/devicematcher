@@ -1,6 +1,7 @@
 package com.experian.devicematcher.exceptions;
 
 
+import com.experian.devicematcher.dto.ApiErrorDTO;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
@@ -13,26 +14,30 @@ public class AppExceptionHandler {
     private static final Logger logger = LoggerFactory.getLogger(AppExceptionHandler.class);
 
     @ExceptionHandler(DeviceProfileNotFoundException.class)
-    public ResponseEntity<String> handleDeviceProfileNotFoundException(DeviceProfileNotFoundException ex) {
+    public ResponseEntity<ApiErrorDTO> handleDeviceProfileNotFoundException(DeviceProfileNotFoundException ex) {
         logger.error("DeviceProfileNotFoundException: {}", ex.getMessage(), ex);
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
+        var error = new ApiErrorDTO(HttpStatus.INTERNAL_SERVER_ERROR.value(), ex.getClass().getSimpleName(), ex.getMessage());
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(error);
     }
 
     @ExceptionHandler(DeviceProfileException.class)
-    public ResponseEntity<String> handleDeviceProfileException(DeviceProfileException ex) {
+    public ResponseEntity<ApiErrorDTO> handleDeviceProfileException(DeviceProfileException ex) {
         logger.error("DeviceProfileException: {}", ex.getMessage(), ex);
-        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(ex.getMessage());
+        var error = new ApiErrorDTO(HttpStatus.INTERNAL_SERVER_ERROR.value(), ex.getClass().getSimpleName(), ex.getMessage());
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(error);
     }
 
     @ExceptionHandler(DeviceProfileMatchException.class)
-    public ResponseEntity<String> handleDeviceProfileMatchException(DeviceProfileMatchException ex) {
+    public ResponseEntity<ApiErrorDTO> handleDeviceProfileMatchException(DeviceProfileMatchException ex) {
         logger.error("DeviceProfileMatchException: {}", ex.getMessage(), ex);
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ex.getMessage());
+        var error = new ApiErrorDTO(HttpStatus.BAD_REQUEST.value(), ex.getClass().getSimpleName(), ex.getMessage());
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error);
     }
 
     @ExceptionHandler(Exception.class)
-    public ResponseEntity<String> handleGenericException(Exception ex) {
+    public ResponseEntity<ApiErrorDTO> handleGenericException(Exception ex) {
         logger.error("Unhandled Exception: {}", ex.getMessage(), ex);
-        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("An unexpected error occurred.");
+        var error = new ApiErrorDTO(HttpStatus.INTERNAL_SERVER_ERROR.value(), ex.getClass().getSimpleName(), ex.getMessage());
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(error);
     }
 }

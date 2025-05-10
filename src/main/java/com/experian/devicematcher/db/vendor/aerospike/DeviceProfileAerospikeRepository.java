@@ -32,6 +32,9 @@ public class DeviceProfileAerospikeRepository implements DeviceProfileRepository
     @Value("${aerospike.set}")
     private String setName;
 
+    @Value("${aerospike.max-records}")
+    private Long maxRecords;
+
     private final IAerospikeClient client;
 
     @Autowired
@@ -76,7 +79,7 @@ public class DeviceProfileAerospikeRepository implements DeviceProfileRepository
         statement.setFilter(Filter.equal("osName", osName));
 
         QueryPolicy policy = new QueryPolicy();
-        policy.setMaxRecords(10_000);
+        policy.setMaxRecords(maxRecords);
 
         try (RecordSet recordSet = client.query(policy, statement)) {
             List<DeviceProfile> devices = new ArrayList<>();

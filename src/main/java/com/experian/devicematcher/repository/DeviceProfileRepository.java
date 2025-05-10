@@ -6,8 +6,8 @@ import java.util.List;
 import java.util.Optional;
 
 public interface DeviceProfileRepository {
-    public Optional<DeviceProfile> findDeviceById(String deviceId);
-    public List<DeviceProfile> findDevicesByOSName(String osName);
-    public void deleteDeviceById(String deviceId);
-    public void persistDevice(DeviceProfile device);
+    Optional<DeviceProfile> findDeviceById(String deviceId);
+    List<DeviceProfile> findDevicesByOSName(String osName);
+    void deleteDeviceById(String deviceId);
+    void persistDevice(DeviceProfile device);
 }

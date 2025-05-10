@@ -5,18 +5,8 @@ public class UserAgentParsingException extends Exception {
 
     public final String userAgent;
 
-    public UserAgentParsingException(String message, String userAgent) {
-        super(message);
-        this.userAgent = userAgent;
-    }
-
     public UserAgentParsingException(String message, String userAgent, Throwable cause) {
         super(message, cause);
-        this.userAgent = userAgent;
-    }
-
-    public UserAgentParsingException(String userAgent, Throwable cause) {
-        super(cause);
         this.userAgent = userAgent;
     }
 }

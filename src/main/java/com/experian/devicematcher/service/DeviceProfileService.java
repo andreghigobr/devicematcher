@@ -21,7 +21,6 @@ public class DeviceProfileService {
     private UserAgentDeviceParser userAgentParser;
     private DeviceProfileRepository repository;
 
-    // constructor
     @Autowired
     public DeviceProfileService(UserAgentDeviceParser userAgentParser, DeviceProfileRepository repository) {
         this.userAgentParser = userAgentParser;
@@ -30,6 +29,10 @@ public class DeviceProfileService {
 
     public Optional<DeviceProfile> getDeviceById(String deviceId) throws DeviceProfileNotFoundException {
         try {
+            if (deviceId == null || deviceId.isBlank()) {
+                throw new IllegalArgumentException("deviceId cannot be null or blank");
+            }
+
             logger.info("Getting Device By ID | deviceId={}", deviceId);
             return repository.findDeviceById(deviceId);
         } catch (Exception ex) {

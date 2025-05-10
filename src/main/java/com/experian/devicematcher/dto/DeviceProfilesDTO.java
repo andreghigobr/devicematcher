@@ -18,10 +18,6 @@ public class DeviceProfilesDTO {
     }
 
     public static DeviceProfilesDTO from(List<DeviceProfile> devices) {
-        if (devices == null || devices.isEmpty()) {
-            return new DeviceProfilesDTO(List.of());
-        }
-
         return new DeviceProfilesDTO(
                 devices.stream()
                         .map(DeviceProfileDTO::from)
