@@ -29,10 +29,6 @@ public class DeviceProfileService {
 
     public Optional<DeviceProfile> getDeviceById(String deviceId) throws DeviceProfileNotFoundException {
         try {
-            if (deviceId == null || deviceId.isBlank()) {
-                throw new IllegalArgumentException("deviceId cannot be null or blank");
-            }
-
             logger.info("Getting Device By ID | deviceId={}", deviceId);
             return repository.findDeviceById(deviceId);
         } catch (Exception ex) {
@@ -46,19 +42,21 @@ public class DeviceProfileService {
 
             var ua = userAgentParser.parse(userAgent);
 
-            var device = repository.findDeviceByUserAgent(ua).stream()
-                    .findFirst()
-                    .orElseGet(() -> {
-                        var d = DeviceProfile.from(ua);
-                        repository.persistDevice(d);
-                        return d;
-                    });
+            var device = repository.findDevicesByOSName(ua.getOsName()).stream()
+                .filter(d -> d.getOsVersion().equalsIgnoreCase(ua.getOsVersion()))
+                .filter(d -> d.getBrowserName().equalsIgnoreCase(ua.getBrowserName()))
+                .filter(d -> d.getBrowserVersion().equalsIgnoreCase(ua.getBrowserVersion()))
+                .findFirst().orElseGet(() -> {
+                    var d = DeviceProfile.from(ua);
+                    repository.persistDevice(d);
+                    return d;
+                });
 
             long hitCount = repository.incrementHitCount(device.getDeviceId());
             return device.withHitCount(hitCount);
         } catch (Exception ex) {
             logger.error("Error matching device by User-Agent: {}", ex.getMessage(), ex);
-            throw new DeviceProfileMatchException(userAgent, ex);
+            throw new DeviceProfileMatchException(ex);
         }
     }
 
@@ -76,7 +74,7 @@ public class DeviceProfileService {
             logger.info("Deleting Device By ID | deviceId={}", deviceId);
             repository.deleteDeviceById(deviceId);
         } catch (Exception ex) {
-            throw new DeviceProfileException(deviceId, ex);
+            throw new DeviceProfileException(ex);
         }
     }
 }

@@ -14,6 +14,8 @@ import java.util.regex.Pattern;
 public class UserAgentDeviceRegexParser implements UserAgentDeviceParser {
     private static final Logger logger = LoggerFactory.getLogger(UserAgentDeviceRegexParser.class);
 
+    private static final String REGEX = "Mozilla/\\d\\.\\d \\(([^;\\)]+)(?:; ([^;\\)]+))?(?:; ([^;\\)]+))?\\).*? ([^/]+)/([\\d\\.]+)";
+
     @Override
     public UserAgent parse(String userAgent) throws UserAgentParsingException {
         try {
@@ -23,8 +25,8 @@ public class UserAgentDeviceRegexParser implements UserAgentDeviceParser {
                 throw new IllegalArgumentException("Blank User-Agent string");
             }
 
-            String regex = "Mozilla/\\d\\.\\d \\(([^;\\)]+)(?:; ([^;\\)]+))?(?:; ([^;\\)]+))?\\).*? ([^/]+)/([\\d\\.]+)";
-            Pattern pattern = Pattern.compile(regex);
+
+            Pattern pattern = Pattern.compile(REGEX);
             var matcher = pattern.matcher(userAgent);
             if (!matcher.find()) {
                 throw new IllegalArgumentException("Invalid User-Agent string format: " + userAgent);
@@ -36,10 +38,10 @@ public class UserAgentDeviceRegexParser implements UserAgentDeviceParser {
             var browserVersion = matcher.group(4);
 
             return UserAgent.create(
-                osName == null ? "" : osName.toLowerCase(),
-                osVersion == null ? "" : osVersion.toLowerCase(),
-                browserName == null ? "" : browserName.toLowerCase(),
-                browserVersion == null ? "" : browserVersion.toLowerCase()
+                osName == null ? "" : osName.trim(),
+                osVersion == null ? "" : osVersion.trim(),
+                browserName == null ? "" : browserName.trim(),
+                browserVersion == null ? "" : browserVersion.trim()
             );
         } catch (Exception ex) {
             logger.error("Error parsing User-Agent string: {}", ex.getMessage(), ex);

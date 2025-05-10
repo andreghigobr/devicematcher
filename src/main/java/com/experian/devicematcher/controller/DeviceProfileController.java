@@ -3,6 +3,7 @@ package com.experian.devicematcher.controller;
 import com.experian.devicematcher.dto.DeviceProfileDTO;
 import com.experian.devicematcher.dto.DeviceProfilesDTO;
 import com.experian.devicematcher.service.DeviceProfileService;
+import jakarta.validation.constraints.NotBlank;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,7 +25,7 @@ public class DeviceProfileController {
 
     @PostMapping
     public ResponseEntity<DeviceProfileDTO> matchDeviceProfile(
-            @RequestHeader(value = "User-Agent", required = true) String userAgent
+            @RequestHeader(value = "User-Agent", required = true) @NotBlank String userAgent
     ) throws Exception {
         logger.info("Receiving Match Device Request | userAgent={}", userAgent);
 
@@ -36,7 +37,7 @@ public class DeviceProfileController {
 
     @GetMapping("/{deviceId}")
     public ResponseEntity<DeviceProfileDTO> getDeviceProfileById(
-            @PathVariable(value = "deviceId", required = true) String deviceId
+            @PathVariable(value = "deviceId", required = true) @NotBlank String deviceId
     ) throws Exception {
         logger.info("Receiving Get Device Profile By Id Request | deviceId={}", deviceId);
 
@@ -52,7 +53,7 @@ public class DeviceProfileController {
 
     @GetMapping
     public ResponseEntity<DeviceProfilesDTO> getDeviceProfiles(
-            @RequestHeader(value = "os-name", required = true) String osName
+            @RequestHeader(value = "os-name", required = true) @NotBlank String osName
     ) throws Exception {
         logger.info("Receiving Get Device Profiles Request | osName={}", osName);
 
@@ -68,7 +69,7 @@ public class DeviceProfileController {
 
     @DeleteMapping("/{deviceId}")
     public ResponseEntity<Object> deleteDeviceProfile(
-            @PathVariable(value = "deviceId", required = true) String deviceId
+            @PathVariable(value = "deviceId", required = true) @NotBlank String deviceId
     ) throws Exception {
         logger.info("Receiving Delete Device Profile Request | deviceId={}", deviceId);
 

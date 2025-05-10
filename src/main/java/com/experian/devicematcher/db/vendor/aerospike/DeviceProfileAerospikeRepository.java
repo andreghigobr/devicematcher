@@ -112,40 +112,6 @@ public class DeviceProfileAerospikeRepository implements DeviceProfileRepository
     }
 
     @Override
-    public List<DeviceProfile> findDeviceByUserAgent(UserAgent userAgent) {
-        logger.info("Retrieving devices by User Agent from Aerospike | userAgent={}", userAgent);
-
-        Statement statement = new Statement();
-        statement.setNamespace(namespace);
-        statement.setSetName(setName);
-        statement.setFilter(Filter.equal("osName", userAgent.getOsName()));
-        statement.setFilter(Filter.equal("osVersion", userAgent.getOsVersion()));
-        statement.setFilter(Filter.equal("browserName", userAgent.getBrowserName()));
-        statement.setFilter(Filter.equal("browserVersion", userAgent.getBrowserVersion()));
-
-        List<DeviceProfile> devices = new ArrayList<>();
-        try (RecordSet recordSet = client.query(queryPolicy, statement)) {
-            while (recordSet.next()) {
-                Record record = recordSet.getRecord();
-                var device = new DeviceProfile(
-                        record.getString("deviceId"),
-                        record.getLong("hitCount"),
-                        record.getString("osName"),
-                        record.getString("osVersion"),
-                        record.getString("browserName"),
-                        record.getString("browserVersion")
-                );
-                devices.add(device);
-            }
-        } catch (Exception ex) {
-            logger.error("Error retrieving devices by User Agent | userAgent={} error={}", userAgent, ex.getMessage());
-            throw ex;
-        }
-
-        return Collections.unmodifiableList(devices);
-    }
-
-    @Override
     public void deleteDeviceById(String deviceId) {
         logger.info("Deleting device by ID from Aerospike | deviceId={}", deviceId);
         Key key = new Key(namespace, setName, deviceId);
@@ -166,10 +132,10 @@ public class DeviceProfileAerospikeRepository implements DeviceProfileRepository
         Bin[] bins = new Bin[]{
             new Bin("deviceId", device.getDeviceId()),
             new Bin("hitCount", device.getHitCount()),
-            new Bin("osName", device.getOsName()),
-            new Bin("osVersion", device.getOsVersion()),
-            new Bin("browserName", device.getBrowserName()),
-            new Bin("browserVersion", device.getBrowserVersion()),
+            new Bin("osName", device.getOsName().toLowerCase()),
+            new Bin("osVersion", device.getOsVersion().toLowerCase()),
+            new Bin("browserName", device.getBrowserName().toLowerCase()),
+            new Bin("browserVersion", device.getBrowserVersion().toLowerCase()),
         };
 
         client.put(writePolicy, key, bins);

@@ -29,10 +29,10 @@ public final class DeviceProfile {
         return new DeviceProfile(
                 UUID.randomUUID().toString(),
                 0L,
-                userAgent.getOsName().toLowerCase(),
-                userAgent.getOsVersion().toLowerCase(),
-                userAgent.getBrowserName().toLowerCase(),
-                userAgent.getBrowserVersion().toLowerCase()
+                userAgent.getOsName(),
+                userAgent.getOsVersion(),
+                userAgent.getBrowserName(),
+                userAgent.getBrowserVersion()
         );
     }
 
