@@ -46,7 +46,7 @@ The application requires an Aerospike database.
 docker pull aerospike/aerospike-server:latest
 ```
 
-You can run it using Docker:
+You can run it using Docker (make sure to be in the root directory of the project):
 
 ```bash
 docker run -d \
