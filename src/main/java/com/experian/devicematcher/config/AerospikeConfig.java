@@ -6,7 +6,6 @@ import com.aerospike.client.policy.Policy;
 import com.aerospike.client.policy.QueryPolicy;
 import com.aerospike.client.policy.WritePolicy;
 import com.aerospike.client.query.IndexType;
-import com.aerospike.client.task.IndexTask;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -39,7 +38,7 @@ public class AerospikeConfig {
 
     @Bean
     public IAerospikeClient aerospikeClient(
-            @Autowired @Qualifier("aerospikeDefaultPolicy") Policy aerospikeDefaultPolicy
+        @Autowired @Qualifier("aerospikeDefaultPolicy") Policy aerospikeDefaultPolicy
     ) {
         logger.info("Configuring Aerospike client | hostname={} port={}", hostname, port);
         var client = new AerospikeClient(hostname, port);

@@ -6,7 +6,7 @@ import com.experian.devicematcher.domain.UserAgent;
 import com.experian.devicematcher.exceptions.DeviceProfileException;
 import com.experian.devicematcher.exceptions.DeviceProfileMatchException;
 import com.experian.devicematcher.exceptions.DeviceProfileNotFoundException;
-import com.experian.devicematcher.parser.UserAgentDeviceParser;
+import com.experian.devicematcher.parser.UserAgentParser;
 import com.experian.devicematcher.repository.DeviceProfileRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -25,7 +25,7 @@ import static org.mockito.Mockito.*;
 
 public class DeviceProfileServiceTest {
     @Mock
-    private UserAgentDeviceParser userAgentParser;
+    private UserAgentParser userAgentParser;
 
     @Mock
     private DeviceProfileRepository repository;
@@ -233,7 +233,6 @@ public class DeviceProfileServiceTest {
         verifyNoMoreInteractions(repository);
     }
 
-    // deleteDeviceById
     @Test
     public void deleteDeviceById_WhenNullId_ShouldThrowException() throws DeviceProfileException {
         String deviceId = null;

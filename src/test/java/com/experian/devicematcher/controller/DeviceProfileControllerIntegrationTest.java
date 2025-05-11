@@ -2,7 +2,7 @@ package com.experian.devicematcher.controller;
 
 import com.experian.devicematcher.dto.DeviceProfileDTO;
 import com.experian.devicematcher.dto.DeviceProfilesDTO;
-import com.experian.devicematcher.parser.UserAgentDeviceRegexParser;
+import com.experian.devicematcher.parser.UserAgentCustomParser;
 import com.experian.devicematcher.repository.DeviceProfileRepository;
 import org.junit.jupiter.api.*;
 import org.slf4j.Logger;
@@ -50,7 +50,7 @@ public class DeviceProfileControllerIntegrationTest {
     private DeviceProfileRepository repository;
 
     @Autowired
-    private UserAgentDeviceRegexParser userAgentParser;
+    private UserAgentCustomParser userAgentParser;
 
     private String baseUrl;
 

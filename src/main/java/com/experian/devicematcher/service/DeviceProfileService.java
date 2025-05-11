@@ -5,7 +5,7 @@ import com.experian.devicematcher.domain.DeviceProfile;
 import com.experian.devicematcher.exceptions.DeviceProfileException;
 import com.experian.devicematcher.exceptions.DeviceProfileMatchException;
 import com.experian.devicematcher.exceptions.DeviceProfileNotFoundException;
-import com.experian.devicematcher.parser.UserAgentDeviceParser;
+import com.experian.devicematcher.parser.UserAgentParser;
 import com.experian.devicematcher.repository.DeviceProfileRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -21,12 +21,12 @@ import static java.util.Objects.requireNonNull;
 public class DeviceProfileService {
     private static final Logger logger = LoggerFactory.getLogger(DeviceProfileService.class);
 
-    private DeviceIdGenerator deviceIdGenerator;
-    private UserAgentDeviceParser userAgentParser;
-    private DeviceProfileRepository repository;
+    private final DeviceIdGenerator deviceIdGenerator;
+    private final UserAgentParser userAgentParser;
+    private final DeviceProfileRepository repository;
 
     @Autowired
-    public DeviceProfileService(DeviceIdGenerator deviceIdGenerator, UserAgentDeviceParser userAgentParser, DeviceProfileRepository repository) {
+    public DeviceProfileService(DeviceIdGenerator deviceIdGenerator, UserAgentParser userAgentParser, DeviceProfileRepository repository) {
         this.deviceIdGenerator = deviceIdGenerator;
         this.userAgentParser = userAgentParser;
         this.repository = repository;
@@ -56,7 +56,7 @@ public class DeviceProfileService {
             var device = repository.findDevicesByOSName(userAgent.getOsName().toLowerCase()).stream()
                 .filter(d -> d.match(userAgent))
                 .findFirst().orElseGet(() -> {
-                    var d = DeviceProfile.from(() -> deviceIdGenerator.generateId(), userAgent);
+                    var d = DeviceProfile.from(deviceIdGenerator::generateId, userAgent);
                     repository.persistDevice(d);
                     return d;
                 });

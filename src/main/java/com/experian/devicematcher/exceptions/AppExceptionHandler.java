@@ -44,22 +44,20 @@ public class AppExceptionHandler {
     @ExceptionHandler(HandlerMethodValidationException.class)
     public ResponseEntity<ApiErrorDTO> handleHandlerMethodValidationException(HandlerMethodValidationException ex) {
         logger.error("Validation error: {}", ex.getMessage(), ex);
-
         var error = new ApiErrorDTO(HttpStatus.BAD_REQUEST.value(), ex.getClass().getSimpleName(), ex.getMessage());
-
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error);
     }
 
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ApiErrorDTO> handleGenericException(Exception ex) {
-        logger.error("Exception: {}", ex.getMessage(), ex);
+        logger.error("{}: {}", ex.getClass().getSimpleName(), ex.getMessage(), ex);
         var error = new ApiErrorDTO(HttpStatus.INTERNAL_SERVER_ERROR.value(), ex.getClass().getSimpleName(), ex.getMessage());
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(error);
     }
 
     @ExceptionHandler(RuntimeException.class)
     public ResponseEntity<ApiErrorDTO> handleRuntimeException(RuntimeException ex) {
-        logger.error("RuntimeException: {}", ex.getMessage(), ex);
+        logger.error("{}: {}", ex.getClass().getSimpleName(), ex.getMessage(), ex);
         var error = new ApiErrorDTO(HttpStatus.INTERNAL_SERVER_ERROR.value(), ex.getClass().getSimpleName(), ex.getMessage());
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(error);
     }

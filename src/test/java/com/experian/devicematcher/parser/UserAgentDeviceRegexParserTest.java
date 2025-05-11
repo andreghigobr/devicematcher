@@ -4,12 +4,14 @@ import com.experian.devicematcher.exceptions.UserAgentParsingException;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
+import ua_parser.Parser;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 public class UserAgentDeviceRegexParserTest {
-    private UserAgentDeviceParser parser = new UserAgentDeviceRegexParser();
+    private final Parser uaParser = new Parser();
+    private final UserAgentParser parser = new UserAgentCustomParser(uaParser);
 
     @Test
     public void parseUserAgent_WhenUserAgentIsNull_ShouldThrowException() {

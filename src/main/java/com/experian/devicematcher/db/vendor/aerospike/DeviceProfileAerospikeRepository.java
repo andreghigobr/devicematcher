@@ -102,7 +102,7 @@ public class DeviceProfileAerospikeRepository implements DeviceProfileRepository
                 devices.add(device);
             }
         } catch (Exception ex) {
-            logger.error("Error retrieving devices by OS | osName={} error={}", osName, ex.getMessage());
+            logger.error("Error retrieving devices by OS from Aerospike | osName={} error={}", osName, ex.getMessage());
             throw ex;
         }
 
@@ -116,9 +116,9 @@ public class DeviceProfileAerospikeRepository implements DeviceProfileRepository
         boolean isDeleted = client.delete(writePolicy, key);
 
         if (isDeleted) {
-            logger.info("Device deleted successfully | deviceId={}", deviceId);
+            logger.info("Device deleted successfully on Aerospike | deviceId={}", deviceId);
         } else {
-            logger.warn("Device not found for deletion | deviceId={}", deviceId);
+            logger.warn("Device not found for deletion on Aerospike | deviceId={}", deviceId);
         }
     }
 
@@ -137,6 +137,7 @@ public class DeviceProfileAerospikeRepository implements DeviceProfileRepository
         };
 
         client.put(writePolicy, key, bins);
+        logger.info("Device device profile persisted into Aerospike | device={}", device);
     }
 
     @Override
