@@ -24,7 +24,7 @@ The API endpoints is available at docs/devicematcher.postman_collection.json.
 
 - Java 21
 - Spring Boot
-- Aerospike NoSQL Database
+- [Aerospike NoSQL Database](https://aerospike.com/)
 - Gradle
 - Docker
 - TestContainers
@@ -36,7 +36,7 @@ The API endpoints is available at docs/devicematcher.postman_collection.json.
 - JDK 21+
 - Gradle
 - Docker
-- Aerospike server (can be run via Docker)
+- [Aerospike](https://aerospike.com/) server (can be run via Docker)
 
 ### Setting up Aerospike
 
