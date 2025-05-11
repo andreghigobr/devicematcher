@@ -5,8 +5,12 @@ import com.aerospike.client.IAerospikeClient;
 import com.aerospike.client.policy.Policy;
 import com.aerospike.client.policy.QueryPolicy;
 import com.aerospike.client.policy.WritePolicy;
+import com.aerospike.client.query.IndexType;
+import com.aerospike.client.task.IndexTask;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -34,9 +38,17 @@ public class AerospikeConfig {
     private Integer timeout;
 
     @Bean
-    public IAerospikeClient aerospikeClient() {
+    public IAerospikeClient aerospikeClient(
+            @Autowired @Qualifier("aerospikeDefaultPolicy") Policy aerospikeDefaultPolicy
+    ) {
         logger.info("Configuring Aerospike client | hostname={} port={}", hostname, port);
-        return new AerospikeClient(hostname, port);
+        var client = new AerospikeClient(hostname, port);
+
+        //client.createIndex(aerospikeDefaultPolicy, namespace, setName, "deviceid_idx", "deviceId", IndexType.STRING).waitTillComplete();
+        client.createIndex(aerospikeDefaultPolicy, namespace, setName, "osname_idx", "osName", IndexType.STRING).waitTillComplete();
+        //client.createIndex(aerospikeDefaultPolicy, namespace, setName, "hitcount_idx", "hitCount", IndexType.STRING).waitTillComplete();
+
+        return client;
     }
 
     @Bean(name = "aerospikeDefaultPolicy")
