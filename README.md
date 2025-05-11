@@ -34,13 +34,19 @@ The API endpoints is available at docs/devicematcher.postman_collection.json.
 ### Prerequisites
 
 - JDK 21+
+- Gradle
 - Docker
 - Aerospike server (can be run via Docker)
-- Gradle
 
 ### Setting up Aerospike
 
-The application requires an Aerospike database. You can run it using Docker:
+The application requires an Aerospike database. 
+
+```bash
+docker pull aerospike/aerospike-server:latest
+```
+
+You can run it using Docker:
 
 ```bash
 docker run -d \
@@ -65,21 +71,16 @@ docker exec -it aerospike asinfo -v "namespaces"
 ```bash
 ./gradlew clean build
 ```
-2. Run the application
-```bash
-./gradlew bootRun
-```
-
-### Running Unit Tests
-
+2. Test the application
 ```bash
 ./gradlew test
 ```
 
-### Running Integration Tests
-
+3. Run the application
 ```bash
-./gradlew integrationTest
+./gradlew bootRun -Dspring.profiles.active=local
 ```
+
+4. Access the application at `http://localhost:8080`
 
 
