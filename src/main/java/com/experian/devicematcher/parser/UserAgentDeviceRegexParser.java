@@ -6,46 +6,46 @@ import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
+import ua_parser.Client;
 import ua_parser.Parser;
-
-import java.util.regex.Pattern;
 
 @Component
 public class UserAgentDeviceRegexParser implements UserAgentDeviceParser {
     private static final Logger logger = LoggerFactory.getLogger(UserAgentDeviceRegexParser.class);
 
-    private static final String REGEX = "Mozilla/\\d\\.\\d \\(([^;\\)]+)(?:; ([^;\\)]+))?(?:; ([^;\\)]+))?\\).*? ([^/]+)/([\\d\\.]+)";
-
     @Override
     public UserAgent parse(String userAgent) throws UserAgentParsingException {
         try {
-            logger.info("Parsing User-Agent String | userAgent={}", userAgent);
-
             if (StringUtils.isBlank(userAgent)) {
-                throw new IllegalArgumentException("Blank User-Agent string");
+                throw new IllegalArgumentException("User-Agent string is blank");
             }
 
+            Parser uaParser = new Parser();
+            Client client = uaParser.parse(userAgent);
 
-            Pattern pattern = Pattern.compile(REGEX);
-            var matcher = pattern.matcher(userAgent);
-            if (!matcher.find()) {
-                throw new IllegalArgumentException("Invalid User-Agent string format: " + userAgent);
-            }
+            var osName = client.os.family == null ? "Unknown" : (client.os.family.equalsIgnoreCase("Other") ? "Unknown" : client.os.family);
 
-            var osName = matcher.group(1);
-            var osVersion = matcher.group(2);
-            var browserName = matcher.group(3);
-            var browserVersion = matcher.group(4);
+            var osMajorVersion = client.os.major == null ? "" : client.os.major;
+            var osMinorVersion = client.os.minor == null ? "0" : client.os.minor;
+            var osPatchVersion = client.os.patch == null ? "0" : client.os.patch;
+            var osVersion = osMajorVersion.isEmpty() ? null : (osMajorVersion + "." + osMinorVersion + "." + osPatchVersion);
+
+            var browserName = client.userAgent.family == null ? "Unknown" : (client.userAgent.family.equalsIgnoreCase("Other") ? "Unknown" : client.userAgent.family);
+
+            var browserMajorVersion = client.userAgent.major == null ? "" : client.userAgent.major;
+            var browserMinorVersion = client.userAgent.minor == null ? "0" : client.userAgent.minor;
+            var browserPatchVersion = client.userAgent.patch == null ? "0" : client.userAgent.patch;
+            var browserVersion = browserMajorVersion.isBlank() ? null : (browserMajorVersion + "." + browserMinorVersion + "." + browserPatchVersion);
 
             return UserAgent.create(
-                osName == null ? "" : osName.trim(),
-                osVersion == null ? "" : osVersion.trim(),
-                browserName == null ? "" : browserName.trim(),
-                browserVersion == null ? "" : browserVersion.trim()
+                    osName,
+                    osVersion,
+                    browserName,
+                    browserVersion
             );
         } catch (Exception ex) {
             logger.error("Error parsing User-Agent string: {}", ex.getMessage(), ex);
-            throw new UserAgentParsingException("Error parsing User-Agent string", userAgent, ex);
+            throw new UserAgentParsingException(ex);
         }
     }
 }

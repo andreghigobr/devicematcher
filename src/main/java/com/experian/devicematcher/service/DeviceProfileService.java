@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 @Service
@@ -29,6 +30,7 @@ public class DeviceProfileService {
 
     public Optional<DeviceProfile> getDeviceById(String deviceId) throws DeviceProfileNotFoundException {
         try {
+            Objects.requireNonNull(deviceId, "Device ID cannot be null");
             logger.info("Getting Device By ID | deviceId={}", deviceId);
             return repository.findDeviceById(deviceId);
         } catch (Exception ex) {

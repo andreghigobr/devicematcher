@@ -3,10 +3,15 @@ package com.experian.devicematcher.exceptions;
 public class UserAgentParsingException extends Exception {
     private static final long serialVersionUID = 1L;
 
-    public final String userAgent;
+    public UserAgentParsingException(String message) {
+        super(message);
+    }
 
-    public UserAgentParsingException(String message, String userAgent, Throwable cause) {
+    public UserAgentParsingException(String message, Throwable cause) {
         super(message, cause);
-        this.userAgent = userAgent;
+    }
+
+    public UserAgentParsingException(Throwable cause) {
+        super(cause);
     }
 }

@@ -17,6 +17,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.*;
 
@@ -98,28 +99,39 @@ public class DeviceProfileServiceTest {
         verify(repository, times(0)).persistDevice(any());
     }
 
-    // SCENARIO: MATCH DEVICE BY USER AGENT: WHEN VALID USER AGENT AND NEW DEVICE, THEN RETURNS DEVICE WITH HIT COUNT 1
     @Test
     public void matchDevice_WhenValidUserAgent_NewDevice_ThenReturnDeviceWithCount1() throws Exception {
         // Arrange
         String ua = "Mozilla/5.0 (iPhone; CPU iPhone OS 16_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/16.0 Mobile/15E148 Safari/604.1";
-        var userAgent = new UserAgent("iPhone", "16_0", "Safari", "16.0");
-        var deviceProfile = new DeviceProfile("1", 0L, "iPhone", "16_0", "Safari", "16.0");
+        var osName = "iPhone";
+        var osVersion = "16.0.0";
+        var browserName = "Safari";
+        var browserVersion = "16.0.0";
+        var deviceId = UUID.randomUUID().toString();
+        var hitCount = 0L;
+
+        var userAgent = new UserAgent(osName, osVersion, browserName, browserVersion);
+        var deviceProfile = new DeviceProfile(deviceId, hitCount, osName, osVersion, browserName, browserVersion);
         when(userAgentParser.parse(ua)).thenReturn(userAgent);
-        when(repository.findDevicesByOSName("iPhone")).thenReturn(List.of(deviceProfile));
+        when(repository.findDevicesByOSName(osName)).thenReturn(List.of(deviceProfile));
+        when(repository.incrementHitCount(deviceId)).thenReturn(hitCount + 1);
 
         // Act
         var device = service.matchDevice(ua);
 
         // Assert
-        Assert.isTrue(device.getHitCount() == 1, "Device hit count should be 1 for new device");
-        Assert.isTrue(device.getOsName().equals("iPhone"), "OS Name should match");
-        Assert.isTrue(device.getOsVersion().equals("16_0"), "OS Version should match");
-        Assert.isTrue(device.getBrowserName().equals("Safari"), "Browser Name should match");
-        Assert.isTrue(device.getBrowserVersion().equals("16.0"), "Browser Version should match");
+        assertEquals(deviceId, device.getDeviceId(), "Device ID should match");
+        assertEquals(hitCount, device.getHitCount(), "Device hit count should be 1 for new device");
+        assertEquals(osName, device.getOsName(), "OS Name should match");
+        assertEquals(osVersion, device.getOsVersion(), "OS Version should match");
+        assertEquals(browserName, device.getBrowserName(), "Browser Name should match");
+        assertEquals(browserVersion, device.getBrowserVersion(), "Browser Version should match");
+
         verify(userAgentParser, times(1)).parse(ua);
         verify(repository, times(1)).persistDevice(any(DeviceProfile.class));
-        verify(repository, times(1)).findDevicesByOSName("iPhone");
+        verify(repository, times(1)).findDevicesByOSName(osName);
+        verify(repository, times(1)).incrementHitCount(deviceId);
+        verify(repository, times(1)).findDevicesByOSName(osName);
         verifyNoMoreInteractions(repository);
         verifyNoMoreInteractions(userAgentParser);
     }

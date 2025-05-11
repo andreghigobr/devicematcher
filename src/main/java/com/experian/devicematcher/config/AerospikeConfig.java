@@ -21,6 +21,12 @@ public class AerospikeConfig {
     @Value("${aerospike.port}")
     private Integer port;
 
+    @Value("${aerospike.namespace}")
+    private String namespace;
+
+    @Value("${aerospike.set}")
+    private String setName;
+
     @Value("${aerospike.query-policy.max-records}")
     private Long maxRecords;
 
