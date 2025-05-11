@@ -28,16 +28,11 @@ public class UserAgentCustomParser implements UserAgentParser {
 
             Client client = uaParser.parse(userAgentString);
 
-            var osName = getOSName(client);
-            var osVersion = getOSVersion(client);
-            var browserName = getBrowserName(client);
-            var browserVersion = getBrowserVersion(client);
-
             return UserAgent.create(
-                    osName.toLowerCase(),
-                    osVersion,
-                    browserName.toLowerCase(),
-                    browserVersion
+                parseOSName(client).toLowerCase(),
+                parseOSVersion(client),
+                parseBrowserName(client).toLowerCase(),
+                parseBrowserVersion(client)
             );
         } catch (Exception ex) {
             logger.error("Error parsing User-Agent string: {}", ex.getMessage(), ex);
@@ -45,22 +40,22 @@ public class UserAgentCustomParser implements UserAgentParser {
         }
     }
 
-    private String getOSName(Client client) {
+    private String parseOSName(Client client) {
         return client.os.family == null ? "Unknown" : (client.os.family.equalsIgnoreCase("Other") ? "Unknown" : client.os.family);
     }
 
-    private String getOSVersion(Client client) {
+    private String parseOSVersion(Client client) {
         var osMajorVersion = client.os.major == null ? "" : client.os.major;
         var osMinorVersion = client.os.minor == null ? "0" : client.os.minor;
         var osPatchVersion = client.os.patch == null ? "0" : client.os.patch;
         return osMajorVersion.isEmpty() ? "" : (osMajorVersion + "." + osMinorVersion + "." + osPatchVersion);
     }
 
-    private String getBrowserName(Client client) {
+    private String parseBrowserName(Client client) {
         return client.userAgent.family == null ? "Unknown" : (client.userAgent.family.equalsIgnoreCase("Other") ? "Unknown" : client.userAgent.family);
     }
 
-    private String getBrowserVersion(Client client) {
+    private String parseBrowserVersion(Client client) {
         var browserMajorVersion = client.userAgent.major == null ? "" : client.userAgent.major;
         var browserMinorVersion = client.userAgent.minor == null ? "0" : client.userAgent.minor;
         var browserPatchVersion = client.userAgent.patch == null ? "0" : client.userAgent.patch;
