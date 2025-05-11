@@ -131,9 +131,9 @@ public class DeviceProfileServiceTest {
         // Assert
         assertEquals(deviceId, device.getDeviceId(), "Device ID should match");
         assertEquals(initialHitCount + 1, device.getHitCount(), "Device hit count should be 1 for new devices");
-        assertEquals(osName, device.getOsName(), "OS Name should match");
+        assertEquals(osName.toLowerCase(), device.getOsName(), "OS Name should match");
         assertEquals(osVersion, device.getOsVersion(), "OS Version should match");
-        assertEquals(browserName, device.getBrowserName(), "Browser Name should match");
+        assertEquals(browserName.toLowerCase(), device.getBrowserName(), "Browser Name should match");
         assertEquals(browserVersion, device.getBrowserVersion(), "Browser Version should match");
 
         verify(userAgentParser, times(1)).parse(ua);

@@ -1,6 +1,7 @@
 package com.experian.devicematcher.controller;
 
 import com.experian.devicematcher.dto.DeviceProfileDTO;
+import com.experian.devicematcher.dto.DeviceProfilesDTO;
 import com.experian.devicematcher.parser.UserAgentDeviceRegexParser;
 import com.experian.devicematcher.repository.DeviceProfileRepository;
 import org.junit.jupiter.api.*;
@@ -18,6 +19,8 @@ import org.springframework.test.context.TestPropertySource;
 import org.testcontainers.containers.BindMode;
 import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.utility.DockerImageName;
+
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -94,40 +97,23 @@ public class DeviceProfileControllerIntegrationTest {
 
     @Test
     public void matchDevice_WithBlankUserAgent_ShouldReturnBadRequest() throws Exception {
-        // Arrange
-        String userAgentString = "";
-        HttpHeaders headers = new HttpHeaders();
-        headers.set("User-Agent", userAgentString);
-
         // Act
-        ResponseEntity<DeviceProfileDTO> response = restTemplate.exchange(
-                baseUrl + "/v1/devices",
-                HttpMethod.POST,
-                new HttpEntity<>(headers),
-                DeviceProfileDTO.class
-        );
-
+        ResponseEntity<DeviceProfileDTO> response = matchDevice("");
         // Assert
         assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
     }
 
     @Test
-    public void matchDevice_WithInvalidUserAgent_ShouldReturnBadRequest() throws Exception {
-        // Arrange
-        var userAgentString = "Invalid User-Agent String";
-        HttpHeaders headers = new HttpHeaders();
-        headers.set("User-Agent", userAgentString);
-
+    public void matchDevice_WithInvalidUserAgent_ShouldReturnOK_UnknownDevice() throws Exception {
         // Act
-        ResponseEntity<DeviceProfileDTO> response = restTemplate.exchange(
-                baseUrl + "/v1/devices",
-                HttpMethod.POST,
-                new HttpEntity<>(headers),
-                DeviceProfileDTO.class
-        );
+        ResponseEntity<DeviceProfileDTO> response = matchDevice("Invalid User-Agent String");
+        assertEquals(HttpStatus.OK, response.getStatusCode());
 
-        // Assert
-        assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
+        var device = getDeviceById(response.getBody().getDeviceId()).getBody();
+        assertEquals("unknown", device.getOsName());
+        assertEquals("", device.getOsVersion());
+        assertEquals("unknown", device.getBrowserName());
+        assertEquals("", device.getBrowserVersion());
     }
 
     @Test
@@ -136,16 +122,8 @@ public class DeviceProfileControllerIntegrationTest {
         var userAgentString = "Mozilla/5.0 (Linux; Android 12) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/105.0.0.0 Mobile Safari/537.36";
         var userAgent = userAgentParser.parse(userAgentString);
 
-        HttpHeaders headers = new HttpHeaders();
-        headers.set("User-Agent", userAgentString);
-
         // Act
-        ResponseEntity<DeviceProfileDTO> response = restTemplate.exchange(
-                baseUrl + "/v1/devices",
-                HttpMethod.POST,
-                new HttpEntity<>(headers),
-                DeviceProfileDTO.class
-        );
+        ResponseEntity<DeviceProfileDTO> response = matchDevice(userAgentString);
 
         // Assert
         assertEquals(HttpStatus.OK, response.getStatusCode());
@@ -164,24 +142,11 @@ public class DeviceProfileControllerIntegrationTest {
         var userAgentString = "Mozilla/5.0 (iPhone; CPU iPhone OS 16_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/16.0 Mobile/15E148 Safari/604.1";
         var userAgent = userAgentParser.parse(userAgentString);
 
-        HttpHeaders headers = new HttpHeaders();
-        headers.set("User-Agent", userAgentString);
-
         // first hit
-        restTemplate.exchange(
-                baseUrl + "/v1/devices",
-                HttpMethod.POST,
-                new HttpEntity<>(headers),
-                DeviceProfileDTO.class
-        );
+        matchDevice(userAgentString);
 
         // second hit
-        ResponseEntity<DeviceProfileDTO> response = restTemplate.exchange(
-                baseUrl + "/v1/devices",
-                HttpMethod.POST,
-                new HttpEntity<>(headers),
-                DeviceProfileDTO.class
-        );
+        ResponseEntity<DeviceProfileDTO> response = matchDevice(userAgentString);
 
         // Assert
         assertEquals(HttpStatus.OK, response.getStatusCode());
@@ -196,31 +161,15 @@ public class DeviceProfileControllerIntegrationTest {
 
     @Test
     public void getDevicesById_WithBlankId_ShouldReturnNotFoundResource() {
-        HttpHeaders headers = new HttpHeaders();
         String deviceId = "";
-
-        ResponseEntity<DeviceProfileDTO> response = restTemplate.exchange(
-                baseUrl + "/v1/devices/" + deviceId,
-                HttpMethod.GET,
-                new HttpEntity<>(headers),
-                DeviceProfileDTO.class
-        );
-
+        ResponseEntity<DeviceProfileDTO> response = getDeviceById(deviceId);
         assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, response.getStatusCode());
     }
 
     @Test
     public void getDevicesById_WithValidId_NotExists_ShouldReturnNotFound() throws Exception {
-        HttpHeaders headers = new HttpHeaders();
         String deviceId = "INVALID USER ID";
-
-        ResponseEntity<DeviceProfileDTO> response = restTemplate.exchange(
-                baseUrl + "/v1/devices/" + deviceId,
-                HttpMethod.GET,
-                new HttpEntity<>(headers),
-                DeviceProfileDTO.class
-        );
-
+        ResponseEntity<DeviceProfileDTO> response = getDeviceById(deviceId);
         assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
     }
 
@@ -228,26 +177,14 @@ public class DeviceProfileControllerIntegrationTest {
     public void getDevicesById_WithValidId_Exists_ShouldReturnOK() {
         // Arrange
         var userAgentString = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/116.0.5845.110 Safari/537.36";
-        HttpHeaders headers = new HttpHeaders();
-        headers.set("User-Agent", userAgentString);
 
         // first hit
-        ResponseEntity<DeviceProfileDTO> matchResponse = restTemplate.exchange(
-                baseUrl + "/v1/devices",
-                HttpMethod.POST,
-                new HttpEntity<>(headers),
-                DeviceProfileDTO.class
-        );
+        ResponseEntity<DeviceProfileDTO> matchResponse = matchDevice(userAgentString);
 
         assertEquals(HttpStatus.OK, matchResponse.getStatusCode());
         assertNotNull(matchResponse.getBody());
 
-        ResponseEntity<DeviceProfileDTO> response = restTemplate.exchange(
-                baseUrl + "/v1/devices/" + matchResponse.getBody().getDeviceId(),
-                HttpMethod.GET,
-                new HttpEntity<>(headers),
-                DeviceProfileDTO.class
-        );
+        ResponseEntity<DeviceProfileDTO> response = getDeviceById(matchResponse.getBody().getDeviceId());
 
         assertNotNull(response.getBody());
         assertEquals(HttpStatus.OK, response.getStatusCode());
@@ -259,43 +196,136 @@ public class DeviceProfileControllerIntegrationTest {
         assertEquals(matchResponse.getBody().getBrowserVersion(), response.getBody().getBrowserVersion());
     }
 
-    /*@Test
-    public void getDevicesByOS_WithValidOS_ShouldReturnDeviceList() {
+    @Test
+    public void getDevicesByOS_WithBlankOS_ShouldReturnBadRequest() {
         // Act
-        ResponseEntity<List<DeviceProfile>> response = restTemplate.exchange(
-                baseUrl + "/os/android",
-                HttpMethod.GET,
-                null,
-                new ParameterizedTypeReference<List<DeviceProfile>>() {}
-        );
+        ResponseEntity<DeviceProfilesDTO> response = getDevicesByOS("");
 
         // Assert
-        assertEquals(HttpStatus.OK, response.getStatusCode());
-        assertNotNull(response.getBody());
-        assertTrue(response.getBody().size() > 0);
-        assertTrue(response.getBody().stream()
-                .anyMatch(device -> "Android".equalsIgnoreCase(device.getOsName())));
+        assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
     }
 
     @Test
-    public void deleteDeviceById_WithValidId_ShouldReturnNoContent() {
+    public void getDevicesByOS_WithInvalidOS_ShouldReturnNotFound() {
         // Act
-        ResponseEntity<Void> response = restTemplate.exchange(
-                baseUrl + "/" + testDevice.getDeviceId(),
-                HttpMethod.DELETE,
-                null,
-                Void.class
-        );
+        ResponseEntity<DeviceProfilesDTO> response = getDevicesByOS("INVALID OS");
 
         // Assert
-        assertEquals(HttpStatus.NO_CONTENT, response.getStatusCode());
-    }*/
+        assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
+    }
 
-    // match device - new device - hit count 1
-    // match device - existing device - hit count > 1
-    // get device by id - not found
-    // get device by id - existing device
-    // get device by os - not found
-    // get device by os - found
-    // delete device - existing device - no content and next get by id call return not found
+    @Test
+    public void getDevicesByOS_WithValidOS_ShouldReturnOK() {
+        // Act
+        var osName = "Linux";
+        var device1 = matchDevice("Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101 Firefox/102.0").getBody();
+        var device2 = matchDevice("Mozilla/5.0 (X11; Linux 86_64) AppleWebKit/537.36 (KHTML, like Gecko) Safari/537.36").getBody();
+        var device3 = matchDevice("Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/116.0.5845.110 Safari/537.36 Edg/116.0.1938.69").getBody();
+        var expectedDevices = List.of(device1, device2, device3);
+
+        // Act
+        var response = getDevicesByOS(osName);
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+
+        var devicesByOS = response.getBody();
+
+        assertEquals(expectedDevices.size(), devicesByOS.getDevices().size());
+
+        assertTrue(expectedDevices.stream().anyMatch(d -> d.getDeviceId().equals(device1.getDeviceId())));
+        assertTrue(expectedDevices.stream().anyMatch(d -> d.getDeviceId().equals(device2.getDeviceId())));
+        assertTrue(expectedDevices.stream().anyMatch(d -> d.getDeviceId().equals(device3.getDeviceId())));
+
+        assertTrue(devicesByOS.getDevices().stream().allMatch(d -> d.getOsName().equalsIgnoreCase(osName)));
+    }
+
+    @Test
+    public void deleteDeviceById_WithBlankId_ShouldReturnBadRequest() {
+        // Act
+        ResponseEntity<DeviceProfileDTO> response = deleteDeviceById("");
+        // Assert
+        assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, response.getStatusCode());
+    }
+
+    @Test
+    public void deleteDeviceById_WithNonExistedId_ShouldReturnOK() {
+        String deviceId = "test";
+        var deleteResponse = deleteDeviceById(deviceId);
+        assertEquals(HttpStatus.NO_CONTENT, deleteResponse.getStatusCode());
+    }
+
+    @Test
+    public void deleteDeviceById_WithDeviceCreated_ShouldDeleteFromDatabase_And_ShouldReturnOK() {
+        // Act
+        String userAgentString = "Mozilla/5.0 (Macintosh; Intel Mac OS X 12_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/116.0.5845.110 Safari/537.36 Edg/116.0.1938.69";
+
+        // 1 - Match Device and Check Device Exists After Creation
+        var matchedDevice = matchDevice(userAgentString).getBody();
+        var currentDevice = getDeviceById(matchedDevice.getDeviceId()).getBody();
+        assertEquals(matchedDevice.getDeviceId(), currentDevice.getDeviceId());
+
+        // Delete created device profile
+        var deleteResponse = deleteDeviceById(currentDevice.getDeviceId());
+        assertEquals(HttpStatus.NO_CONTENT, deleteResponse.getStatusCode());
+
+        // Check device profile was removed from database
+        var response = getDeviceById(currentDevice.getDeviceId());
+        assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
+    }
+
+    //----------------------------------------
+    // Helpers
+    //----------------------------------------
+    private ResponseEntity<DeviceProfileDTO>  matchDevice(String userAgentString) {
+        HttpHeaders headers = new HttpHeaders();
+        headers.set("User-Agent", userAgentString);
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        headers.setAccept(List.of(MediaType.APPLICATION_JSON));
+
+        return restTemplate.exchange(
+                baseUrl + "/v1/devices",
+                HttpMethod.POST,
+                new HttpEntity<>(headers),
+                DeviceProfileDTO.class
+        );
+    }
+
+    private ResponseEntity<DeviceProfilesDTO> getDevicesByOS(String osName) {
+        HttpHeaders headers = new HttpHeaders();
+        headers.set("os-name", osName);
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        headers.setAccept(List.of(MediaType.APPLICATION_JSON));
+
+        return restTemplate.exchange(
+                baseUrl + "/v1/devices",
+                HttpMethod.GET,
+                new HttpEntity<>(headers),
+                DeviceProfilesDTO.class
+        );
+    }
+
+    private ResponseEntity<DeviceProfileDTO> getDeviceById(String deviceId) {
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        headers.setAccept(List.of(MediaType.APPLICATION_JSON));
+
+        return restTemplate.exchange(
+                baseUrl + "/v1/devices/" + deviceId,
+                HttpMethod.GET,
+                new HttpEntity<>(headers),
+                DeviceProfileDTO.class
+        );
+    }
+
+    private ResponseEntity<DeviceProfileDTO> deleteDeviceById(String deviceId) {
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        headers.setAccept(List.of(MediaType.APPLICATION_JSON));
+
+        return restTemplate.exchange(
+                baseUrl + "/v1/devices/" + deviceId,
+                HttpMethod.DELETE,
+                new HttpEntity<>(headers),
+                DeviceProfileDTO.class
+        );
+    }
 }

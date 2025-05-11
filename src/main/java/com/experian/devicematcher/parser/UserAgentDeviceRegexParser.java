@@ -28,14 +28,14 @@ public class UserAgentDeviceRegexParser implements UserAgentDeviceParser {
             var osMajorVersion = client.os.major == null ? "" : client.os.major;
             var osMinorVersion = client.os.minor == null ? "0" : client.os.minor;
             var osPatchVersion = client.os.patch == null ? "0" : client.os.patch;
-            var osVersion = osMajorVersion.isEmpty() ? null : (osMajorVersion + "." + osMinorVersion + "." + osPatchVersion);
+            var osVersion = osMajorVersion.isEmpty() ? "" : (osMajorVersion + "." + osMinorVersion + "." + osPatchVersion);
 
             var browserName = client.userAgent.family == null ? "Unknown" : (client.userAgent.family.equalsIgnoreCase("Other") ? "Unknown" : client.userAgent.family);
 
             var browserMajorVersion = client.userAgent.major == null ? "" : client.userAgent.major;
             var browserMinorVersion = client.userAgent.minor == null ? "0" : client.userAgent.minor;
             var browserPatchVersion = client.userAgent.patch == null ? "0" : client.userAgent.patch;
-            var browserVersion = browserMajorVersion.isBlank() ? null : (browserMajorVersion + "." + browserMinorVersion + "." + browserPatchVersion);
+            var browserVersion = browserMajorVersion.isBlank() ? "" : (browserMajorVersion + "." + browserMinorVersion + "." + browserPatchVersion);
 
             return UserAgent.create(
                     osName.toLowerCase(),

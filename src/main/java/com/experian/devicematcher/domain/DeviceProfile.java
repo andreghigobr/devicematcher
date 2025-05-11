@@ -30,9 +30,9 @@ public final class DeviceProfile {
                 idSupplier.get(),
                 0L,
                 userAgent.getOsName().toLowerCase(),
-                userAgent.getOsVersion().toLowerCase(),
+                userAgent.getOsVersion(),
                 userAgent.getBrowserName().toLowerCase(),
-                userAgent.getBrowserVersion().toLowerCase()
+                userAgent.getBrowserVersion()
         );
     }
 

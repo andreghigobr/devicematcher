@@ -8,6 +8,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -23,7 +24,10 @@ public class DeviceProfileController {
         this.service = service;
     }
 
-    @PostMapping
+    @PostMapping(
+        produces = MediaType.APPLICATION_JSON_VALUE,
+        consumes = MediaType.APPLICATION_JSON_VALUE
+    )
     public ResponseEntity<DeviceProfileDTO> matchDeviceProfile(
             @RequestHeader(value = "User-Agent", required = true) @NotBlank String userAgent
     ) throws Exception {
@@ -35,7 +39,11 @@ public class DeviceProfileController {
         return ResponseEntity.status(HttpStatus.OK).body(response);
     }
 
-    @GetMapping("/{deviceId}")
+    @GetMapping(
+        value = "/{deviceId}",
+        produces = MediaType.APPLICATION_JSON_VALUE,
+        consumes = MediaType.APPLICATION_JSON_VALUE
+    )
     public ResponseEntity<DeviceProfileDTO> getDeviceProfileById(
             @PathVariable(value = "deviceId", required = true) @NotBlank String deviceId
     ) throws Exception {
@@ -51,7 +59,10 @@ public class DeviceProfileController {
         return ResponseEntity.ok(response);
     }
 
-    @GetMapping
+    @GetMapping(
+        produces = MediaType.APPLICATION_JSON_VALUE,
+        consumes = MediaType.APPLICATION_JSON_VALUE
+    )
     public ResponseEntity<DeviceProfilesDTO> getDeviceProfiles(
             @RequestHeader(value = "os-name", required = true) @NotBlank String osName
     ) throws Exception {
@@ -67,7 +78,11 @@ public class DeviceProfileController {
         return ResponseEntity.ok(response);
     }
 
-    @DeleteMapping("/{deviceId}")
+    @DeleteMapping(
+        value = "/{deviceId}",
+        produces = MediaType.APPLICATION_JSON_VALUE,
+        consumes = MediaType.APPLICATION_JSON_VALUE
+    )
     public ResponseEntity<Object> deleteDeviceProfile(
             @PathVariable(value = "deviceId", required = true) @NotBlank String deviceId
     ) throws Exception {

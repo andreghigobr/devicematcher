@@ -131,9 +131,9 @@ public class DeviceProfileAerospikeRepository implements DeviceProfileRepository
             new Bin("deviceId", device.getDeviceId()),
             new Bin("hitCount", device.getHitCount()),
             new Bin("osName", device.getOsName().toLowerCase()),
-            new Bin("osVersion", device.getOsVersion().toLowerCase()),
+            new Bin("osVersion", device.getOsVersion()),
             new Bin("browserName", device.getBrowserName().toLowerCase()),
-            new Bin("browserVersion", device.getBrowserVersion().toLowerCase()),
+            new Bin("browserVersion", device.getBrowserVersion()),
         };
 
         client.put(writePolicy, key, bins);
