@@ -11,7 +11,7 @@ to create unique device profiles. These profiles are useful for analytics, fraud
 - Device identification based on User-Agent headers
 - Track device usage through hit counts
 - Query devices by operating system name
-- Manage device profiles with create, read, and delete operations
+- Manage device profiles with create (match by User-Agent), Get by ID, and delete by ID
 - Persistence using Aerospike database
 
 ## API Documentation
@@ -30,12 +30,6 @@ The API endpoints is available at docs/devicematcher.postman_collection.json.
 - TestContainers
 
 ## Setup Instructions
-
-### Running Locally
-
-### Running Unit Tests
-
-### Running Integration Tests
 
 ### Prerequisites
 
@@ -57,3 +51,35 @@ docker run -d \
   -v $(pwd)/config/aerospike.conf:/opt/aerospike/etc/aerospike.conf:ro \
    aerospike/aerospike-server \
   --config-file /opt/aerospike/etc/aerospike.conf
+```
+Verify Aerospike is running and namespace `devicematcher` is created:
+
+```bash
+docker exec -it aerospike asinfo -v "namespaces"
+```
+
+### Running Locally
+
+1. Build 
+
+```bash
+./gradlew clean build
+```
+2. Run the application
+```bash
+./gradlew bootRun
+```
+
+### Running Unit Tests
+
+```bash
+./gradlew test
+```
+
+### Running Integration Tests
+
+```bash
+./gradlew integrationTest
+```
+
+

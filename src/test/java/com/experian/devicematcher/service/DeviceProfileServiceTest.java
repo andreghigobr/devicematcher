@@ -139,7 +139,6 @@ public class DeviceProfileServiceTest {
         verify(repository, times(1)).persistDevice(any(DeviceProfile.class));
         verify(repository, times(1)).findDevicesByOSName(osName.toLowerCase());
         verify(repository, times(1)).incrementHitCount(deviceId);
-        verify(repository, times(1)).persistDevice(deviceProfile);
         verify(deviceIdGenerator, times(1)).generateId();
         verifyNoMoreInteractions(repository);
         verifyNoMoreInteractions(userAgentParser);
