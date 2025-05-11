@@ -29,10 +29,10 @@ public final class DeviceProfile {
         return new DeviceProfile(
                 idSupplier.get(),
                 0L,
-                userAgent.getOsName(),
-                userAgent.getOsVersion(),
-                userAgent.getBrowserName(),
-                userAgent.getBrowserVersion()
+                userAgent.getOsName().toLowerCase(),
+                userAgent.getOsVersion().toLowerCase(),
+                userAgent.getBrowserName().toLowerCase(),
+                userAgent.getBrowserVersion().toLowerCase()
         );
     }
 

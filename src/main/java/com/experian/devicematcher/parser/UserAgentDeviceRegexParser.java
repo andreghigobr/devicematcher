@@ -38,9 +38,9 @@ public class UserAgentDeviceRegexParser implements UserAgentDeviceParser {
             var browserVersion = browserMajorVersion.isBlank() ? null : (browserMajorVersion + "." + browserMinorVersion + "." + browserPatchVersion);
 
             return UserAgent.create(
-                    osName,
+                    osName.toLowerCase(),
                     osVersion,
-                    browserName,
+                    browserName.toLowerCase(),
                     browserVersion
             );
         } catch (Exception ex) {
