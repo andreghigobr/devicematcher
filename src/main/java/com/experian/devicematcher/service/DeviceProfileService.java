@@ -44,21 +44,19 @@ public class DeviceProfileService {
         }
     }
 
-    public DeviceProfile matchDevice(String userAgent) throws DeviceProfileMatchException {
+    public DeviceProfile matchDevice(String userAgentString) throws DeviceProfileMatchException {
         try {
-            requireNonNull(userAgent, "User-Agent cannot be null");
-            if (userAgent.isBlank()) throw new IllegalArgumentException("User-Agent cannot be blank");
+            requireNonNull(userAgentString, "User-Agent cannot be null");
+            if (userAgentString.isBlank()) throw new IllegalArgumentException("User-Agent cannot be blank");
 
-            logger.info("Matching Device by User-Agent | userAgent={}", userAgent);
+            logger.info("Matching Device by User-Agent | userAgent={}", userAgentString);
 
-            var ua = userAgentParser.parse(userAgent);
+            var userAgent = userAgentParser.parse(userAgentString);
 
-            var device = repository.findDevicesByOSName(ua.getOsName().toLowerCase()).stream()
-                .filter(d -> d.getOsVersion().equalsIgnoreCase(ua.getOsVersion()))
-                .filter(d -> d.getBrowserName().equalsIgnoreCase(ua.getBrowserName()))
-                .filter(d -> d.getBrowserVersion().equalsIgnoreCase(ua.getBrowserVersion()))
+            var device = repository.findDevicesByOSName(userAgent.getOsName().toLowerCase()).stream()
+                .filter(d -> d.match(userAgent))
                 .findFirst().orElseGet(() -> {
-                    var d = DeviceProfile.from(() -> deviceIdGenerator.generateId(), ua);
+                    var d = DeviceProfile.from(() -> deviceIdGenerator.generateId(), userAgent);
                     repository.persistDevice(d);
                     return d;
                 });

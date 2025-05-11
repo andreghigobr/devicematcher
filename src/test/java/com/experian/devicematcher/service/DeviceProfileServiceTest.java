@@ -121,8 +121,7 @@ public class DeviceProfileServiceTest {
         var deviceProfile = new DeviceProfile(deviceId, initialHitCount, osName, osVersion, browserName, browserVersion);
         when(userAgentParser.parse(ua)).thenReturn(userAgent);
         when(repository.findDevicesByOSName(osName.toLowerCase())).thenReturn(List.of());
-        when(repository.incrementHitCount(deviceId)).thenReturn(initialHitCount + 1L
-        );
+        when(repository.incrementHitCount(deviceId)).thenReturn(initialHitCount + 1L);
         when(deviceIdGenerator.generateId()).thenReturn(deviceId);
 
         // Act

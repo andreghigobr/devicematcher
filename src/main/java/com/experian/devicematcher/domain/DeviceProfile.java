@@ -51,6 +51,14 @@ public final class DeviceProfile {
     }
 
     // --------------------------------------------
+    public boolean match(UserAgent userAgent) {
+        return this.osName.equalsIgnoreCase(userAgent.getOsName()) &&
+                this.osVersion.equalsIgnoreCase(userAgent.getOsVersion()) &&
+                this.browserName.equalsIgnoreCase(userAgent.getBrowserName()) &&
+                this.browserVersion.equalsIgnoreCase(userAgent.getBrowserVersion());
+    }
+
+    // --------------------------------------------
     // Getters
     // --------------------------------------------
     public String getDeviceId() {
@@ -85,7 +93,13 @@ public final class DeviceProfile {
         if (this == obj) return true;
         if (obj == null || getClass() != obj.getClass()) return false;
         DeviceProfile that = (DeviceProfile) obj;
-        return deviceId.equals(that.deviceId);
+
+        return deviceId.equals(that.deviceId) &&
+                hitCount.equals(that.hitCount) &&
+                osName.equals(that.osName) &&
+                osVersion.equals(that.osVersion) &&
+                browserName.equals(that.browserName) &&
+                browserVersion.equals(that.browserVersion);
     }
 
     @Override
