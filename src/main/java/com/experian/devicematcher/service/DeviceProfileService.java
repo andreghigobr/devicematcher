@@ -53,7 +53,7 @@ public class DeviceProfileService {
 
             var ua = userAgentParser.parse(userAgent);
 
-            var device = repository.findDevicesByOSName(ua.getOsName()).stream()
+            var device = repository.findDevicesByOSName(ua.getOsName().toLowerCase()).stream()
                 .filter(d -> d.getOsVersion().equalsIgnoreCase(ua.getOsVersion()))
                 .filter(d -> d.getBrowserName().equalsIgnoreCase(ua.getBrowserName()))
                 .filter(d -> d.getBrowserVersion().equalsIgnoreCase(ua.getBrowserVersion()))

@@ -144,7 +144,8 @@ public class DeviceProfileAerospikeRepository implements DeviceProfileRepository
         logger.info("Incrementing device hit count on Aerospike | deviceId={}", deviceId);
 
         Key key = new Key(namespace, setName, deviceId);
-        Record record = client.operate(writePolicy, key, Operation.add(new Bin("hitCount", 1L)));
+        client.operate(writePolicy, key, Operation.add(new Bin("hitCount", 1L)));
+        Record record = client.get(defaultPolicy, key);
 
         long updatedHitCount = record.getLong("hitCount");
         logger.info("Device HitCount updated | deviceId={} | updatedHitCount={}", deviceId, updatedHitCount);

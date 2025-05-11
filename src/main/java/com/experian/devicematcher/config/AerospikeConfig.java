@@ -44,9 +44,7 @@ public class AerospikeConfig {
         logger.info("Configuring Aerospike client | hostname={} port={}", hostname, port);
         var client = new AerospikeClient(hostname, port);
 
-        //client.createIndex(aerospikeDefaultPolicy, namespace, setName, "deviceid_idx", "deviceId", IndexType.STRING).waitTillComplete();
         client.createIndex(aerospikeDefaultPolicy, namespace, setName, "osname_idx", "osName", IndexType.STRING).waitTillComplete();
-        //client.createIndex(aerospikeDefaultPolicy, namespace, setName, "hitcount_idx", "hitCount", IndexType.STRING).waitTillComplete();
 
         return client;
     }
