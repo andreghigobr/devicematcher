@@ -1,6 +1,6 @@
 package com.experian.devicematcher.domain;
 
-import java.util.UUID;
+import java.util.function.Supplier;
 
 public final class DeviceProfile {
     private final String deviceId;
@@ -25,14 +25,28 @@ public final class DeviceProfile {
     // --------------------------------------------
     // Factory Method
     // --------------------------------------------
-    public static DeviceProfile from(UserAgent userAgent) {
+    public static DeviceProfile from(Supplier<String> idSupplier, UserAgent userAgent) {
         return new DeviceProfile(
-                UUID.randomUUID().toString(),
+                idSupplier.get(),
                 0L,
                 userAgent.getOsName(),
                 userAgent.getOsVersion(),
                 userAgent.getBrowserName(),
                 userAgent.getBrowserVersion()
+        );
+    }
+
+    // --------------------------------------------
+    // Update Methods
+    // --------------------------------------------
+    public DeviceProfile withHitCount(long hitCount) {
+        return new DeviceProfile(
+                deviceId,
+                hitCount,
+                osName,
+                osVersion,
+                browserName,
+                browserVersion
         );
     }
 
@@ -89,16 +103,5 @@ public final class DeviceProfile {
                 ", browserName='" + browserName + '\'' +
                 ", browserVersion='" + browserVersion + '\'' +
                 '}';
-    }
-
-    public DeviceProfile withHitCount(long hitCount) {
-        return new DeviceProfile(
-          deviceId,
-          hitCount,
-          osName,
-          osVersion,
-          browserName,
-          browserVersion
-        );
     }
 }
