@@ -13,7 +13,61 @@
 				"method": "GET",
 				"header": []
 			},
-			"response": []
+			"response": [
+				{
+					"name": "OK iOS",
+					"originalRequest": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8080/v1/devices/:deviceId",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"v1",
+								"devices",
+								":deviceId"
+							],
+							"variable": [
+								{
+									"key": "deviceId",
+									"value": "9cedfebd-1287-4d73-a3fd-7ec00e40b237"
+								}
+							]
+						}
+					},
+					"status": "OK",
+					"code": 200,
+					"_postman_previewlanguage": "json",
+					"header": [
+						{
+							"key": "Content-Type",
+							"value": "application/json"
+						},
+						{
+							"key": "Transfer-Encoding",
+							"value": "chunked"
+						},
+						{
+							"key": "Date",
+							"value": "Sun, 11 May 2025 06:10:41 GMT"
+						},
+						{
+							"key": "Keep-Alive",
+							"value": "timeout=60"
+						},
+						{
+							"key": "Connection",
+							"value": "keep-alive"
+						}
+					],
+					"cookie": [],
+					"body": "{\n    \"deviceId\": \"9cedfebd-1287-4d73-a3fd-7ec00e40b237\",\n    \"hitCount\": 1,\n    \"osName\": \"ios\",\n    \"osVersion\": \"16.0.0\",\n    \"browserName\": \"chrome mobile ios\",\n    \"browserVersion\": \"116.0.5845\"\n}"
+				}
+			]
 		},
 		{
 			"name": "Match Device",
@@ -87,6 +141,58 @@
 					],
 					"cookie": [],
 					"body": "{\n    \"status\": 400,\n    \"error\": \"DeviceProfileMatchException\",\n    \"message\": \"Mozilla/5.0 (iPhone; CPU iPhone OS 16_0 like Mac OS X) AppleWebKit/537.36 (KHTML, like Gecko) CriOS/116.0.5845.110 Mobile/15E148 Safari/604.1\"\n}"
+				},
+				{
+					"name": "OK iOS",
+					"originalRequest": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "User-Agent",
+								"value": "Mozilla/5.0 (iPhone; CPU iPhone OS 16_0 like Mac OS X) AppleWebKit/537.36 (KHTML, like Gecko) CriOS/116.0.5845.110 Mobile/15E148 Safari/604.1",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "http://localhost:8080/v1/devices",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"v1",
+								"devices"
+							]
+						}
+					},
+					"status": "OK",
+					"code": 200,
+					"_postman_previewlanguage": "json",
+					"header": [
+						{
+							"key": "Content-Type",
+							"value": "application/json"
+						},
+						{
+							"key": "Transfer-Encoding",
+							"value": "chunked"
+						},
+						{
+							"key": "Date",
+							"value": "Sun, 11 May 2025 06:08:36 GMT"
+						},
+						{
+							"key": "Keep-Alive",
+							"value": "timeout=60"
+						},
+						{
+							"key": "Connection",
+							"value": "keep-alive"
+						}
+					],
+					"cookie": [],
+					"body": "{\n    \"deviceId\": \"1684796a-acaa-4123-bcd4-db7a56493240\",\n    \"hitCount\": 0,\n    \"osName\": \"iOS\",\n    \"osVersion\": \"16.0.0\",\n    \"browserName\": \"Chrome Mobile iOS\",\n    \"browserVersion\": \"116.0.5845\"\n}"
 				}
 			]
 		},
@@ -114,7 +220,60 @@
 					]
 				}
 			},
-			"response": []
+			"response": [
+				{
+					"name": "OK iOS",
+					"originalRequest": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "os-name",
+								"value": "ios",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "http://localhost:8080/v1/devices",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"v1",
+								"devices"
+							]
+						}
+					},
+					"status": "OK",
+					"code": 200,
+					"_postman_previewlanguage": "json",
+					"header": [
+						{
+							"key": "Content-Type",
+							"value": "application/json"
+						},
+						{
+							"key": "Transfer-Encoding",
+							"value": "chunked"
+						},
+						{
+							"key": "Date",
+							"value": "Sun, 11 May 2025 06:11:45 GMT"
+						},
+						{
+							"key": "Keep-Alive",
+							"value": "timeout=60"
+						},
+						{
+							"key": "Connection",
+							"value": "keep-alive"
+						}
+					],
+					"cookie": [],
+					"body": "{\n    \"devices\": [\n        {\n            \"deviceId\": \"86f40d43-b33f-4775-8e80-9188f448c8b5\",\n            \"hitCount\": 1,\n            \"osName\": \"ios\",\n            \"osVersion\": \"16.0.0\",\n            \"browserName\": \"chrome mobile ios\",\n            \"browserVersion\": \"116.0.5845\"\n        },\n        {\n            \"deviceId\": \"9cedfebd-1287-4d73-a3fd-7ec00e40b237\",\n            \"hitCount\": 1,\n            \"osName\": \"ios\",\n            \"osVersion\": \"16.0.0\",\n            \"browserName\": \"chrome mobile ios\",\n            \"browserVersion\": \"116.0.5845\"\n        },\n        {\n            \"deviceId\": \"f5561e0f-7a56-4291-8967-3a0f6637f1c4\",\n            \"hitCount\": 1,\n            \"osName\": \"ios\",\n            \"osVersion\": \"16.0.0\",\n            \"browserName\": \"chrome mobile ios\",\n            \"browserVersion\": \"116.0.5845\"\n        },\n        {\n            \"deviceId\": \"1684796a-acaa-4123-bcd4-db7a56493240\",\n            \"hitCount\": 1,\n            \"osName\": \"ios\",\n            \"osVersion\": \"16.0.0\",\n            \"browserName\": \"chrome mobile ios\",\n            \"browserVersion\": \"116.0.5845\"\n        }\n    ]\n}"
+				}
+			]
 		},
 		{
 			"name": "Delete Device",
@@ -136,12 +295,58 @@
 					"variable": [
 						{
 							"key": "deviceId",
-							"value": ""
+							"value": "222"
 						}
 					]
 				}
 			},
-			"response": []
+			"response": [
+				{
+					"name": "OK",
+					"originalRequest": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8080/v1/devices/:deviceId",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"v1",
+								"devices",
+								":deviceId"
+							],
+							"variable": [
+								{
+									"key": "deviceId",
+									"value": "1684796a-acaa-4123-bcd4-db7a56493240"
+								}
+							]
+						}
+					},
+					"status": "No Content",
+					"code": 204,
+					"_postman_previewlanguage": "plain",
+					"header": [
+						{
+							"key": "Date",
+							"value": "Sun, 11 May 2025 06:12:01 GMT"
+						},
+						{
+							"key": "Keep-Alive",
+							"value": "timeout=60"
+						},
+						{
+							"key": "Connection",
+							"value": "keep-alive"
+						}
+					],
+					"cookie": [],
+					"body": null
+				}
+			]
 		}
 	]
 }

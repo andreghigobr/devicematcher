@@ -120,7 +120,7 @@ public class DeviceProfileServiceTest {
         var userAgent = new UserAgent(osName, osVersion, browserName, browserVersion);
         var deviceProfile = new DeviceProfile(deviceId, initialHitCount, osName, osVersion, browserName, browserVersion);
         when(userAgentParser.parse(ua)).thenReturn(userAgent);
-        when(repository.findDevicesByOSName(osName)).thenReturn(List.of());
+        when(repository.findDevicesByOSName(osName.toLowerCase())).thenReturn(List.of());
         when(repository.incrementHitCount(deviceId)).thenReturn(initialHitCount + 1L
         );
         when(deviceIdGenerator.generateId()).thenReturn(deviceId);
@@ -138,7 +138,7 @@ public class DeviceProfileServiceTest {
 
         verify(userAgentParser, times(1)).parse(ua);
         verify(repository, times(1)).persistDevice(any(DeviceProfile.class));
-        verify(repository, times(1)).findDevicesByOSName(osName);
+        verify(repository, times(1)).findDevicesByOSName(osName.toLowerCase());
         verify(repository, times(1)).incrementHitCount(deviceId);
         verify(repository, times(1)).persistDevice(deviceProfile);
         verify(deviceIdGenerator, times(1)).generateId();
@@ -161,7 +161,7 @@ public class DeviceProfileServiceTest {
         var userAgent = new UserAgent(osName, osVersion, browserName, browserVersion);
         var deviceProfile = new DeviceProfile(deviceId, initialHitCount, osName, osVersion, browserName, browserVersion);
         when(userAgentParser.parse(ua)).thenReturn(userAgent);
-        when(repository.findDevicesByOSName(osName)).thenReturn(List.of(deviceProfile));
+        when(repository.findDevicesByOSName(osName.toLowerCase())).thenReturn(List.of(deviceProfile));
         when(repository.incrementHitCount(deviceId)).thenReturn(initialHitCount + 1L);
         when(deviceIdGenerator.generateId()).thenReturn(deviceId);
 
@@ -178,7 +178,7 @@ public class DeviceProfileServiceTest {
 
         verify(userAgentParser, times(1)).parse(ua);
         verify(repository, times(0)).persistDevice(any(DeviceProfile.class));
-        verify(repository, times(1)).findDevicesByOSName(osName);
+        verify(repository, times(1)).findDevicesByOSName(osName.toLowerCase());
         verify(repository, times(1)).incrementHitCount(deviceId);
         verify(repository, times(0)).persistDevice(deviceProfile);
         verify(deviceIdGenerator, times(0)).generateId();
