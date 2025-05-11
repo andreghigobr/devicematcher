@@ -1,19 +1,13 @@
 package com.experian.devicematcher.exceptions;
 
-
 import com.experian.devicematcher.dto.ApiErrorDTO;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.validation.method.MethodValidationException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
-import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.method.annotation.HandlerMethodValidationException;
-
-import java.util.HashMap;
-import java.util.Map;
 
 @ControllerAdvice
 public class AppExceptionHandler {
@@ -59,6 +53,13 @@ public class AppExceptionHandler {
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ApiErrorDTO> handleGenericException(Exception ex) {
         logger.error("Exception: {}", ex.getMessage(), ex);
+        var error = new ApiErrorDTO(HttpStatus.INTERNAL_SERVER_ERROR.value(), ex.getClass().getSimpleName(), ex.getMessage());
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(error);
+    }
+
+    @ExceptionHandler(RuntimeException.class)
+    public ResponseEntity<ApiErrorDTO> handleRuntimeException(RuntimeException ex) {
+        logger.error("RuntimeException: {}", ex.getMessage(), ex);
         var error = new ApiErrorDTO(HttpStatus.INTERNAL_SERVER_ERROR.value(), ex.getClass().getSimpleName(), ex.getMessage());
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(error);
     }
