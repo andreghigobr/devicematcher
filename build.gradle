@@ -37,6 +37,10 @@ ext {
 	testcontainersVersion = '1.19.7'
 }
 
+bootRun {
+	systemProperty 'spring.profiles.active', System.getProperty('spring.profiles.active', 'local')
+}
+
 dependencies {
 	// libs
 	implementation "com.github.ua-parser:uap-java:${uapJavaVersion}"

@@ -5,7 +5,7 @@ COPY . .
 RUN ./gradlew build --no-daemon -x test
 
 # Runtime stage
-FROM eclipse-temurin:21-jre
+FROM openjdk:21.0.2-jdk
 WORKDIR /app
 
 # Copy the built jar from the build stage

@@ -40,12 +40,25 @@ public class AerospikeConfig {
     public IAerospikeClient aerospikeClient(
         @Autowired @Qualifier("aerospikeDefaultPolicy") Policy aerospikeDefaultPolicy
     ) {
-        logger.info("Configuring Aerospike client | hostname={} port={}", hostname, port);
-        var client = new AerospikeClient(hostname, port);
+        try {
+            logger.info("Configuring Aerospike client | hostname={} port={}", hostname, port);
+            var client = new AerospikeClient(hostname, port);
+            createIndex(client, namespace, setName);
+            return client;
+        } catch (Exception ex) {
+            logger.error("Error creating Aerospike client: {}", ex.getMessage(), ex);
+            throw ex;
+        }
+    }
 
-        client.createIndex(aerospikeDefaultPolicy, namespace, setName, "osname_idx", "osName", IndexType.STRING).waitTillComplete();
-
-        return client;
+    private void createIndex(AerospikeClient client, String namespace, String setName) {
+        try {
+            logger.info("Creating Aerospike index | namespace={} setName={}", namespace, setName);
+            client.createIndex(null, namespace, setName, "osname_idx", "osName", IndexType.STRING).waitTillComplete();
+        } catch (Exception ex) {
+            logger.error("Error creating Aerospike index: {}", ex.getMessage(), ex);
+            throw ex;
+        }
     }
 
     @Bean(name = "aerospikeDefaultPolicy")

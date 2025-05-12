@@ -50,6 +50,9 @@ docker pull aerospike/aerospike-server:latest
 
 You can run it using Docker:
 
+- make sure to be in the root directory of the project
+- make sure aerospike default ports (3000 3001 3003) are available. 
+
 ```bash
 # make sure to be in the root directory of the project
 docker run -d \
