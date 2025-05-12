@@ -68,8 +68,8 @@ public class DeviceProfileAerospikeRepository implements DeviceProfileRepository
             return Optional.empty();
         }
 
-        logger.debug("Device found | deviceId={}", deviceId);
         var device = DeviceProfileBins.from(record);
+        logger.debug("Device by id {} found | device={}", deviceId, device);
         return Optional.of(device);
     }
 
@@ -94,6 +94,7 @@ public class DeviceProfileAerospikeRepository implements DeviceProfileRepository
             throw ex;
         }
 
+        logger.debug("Devices by OS {} found | devices={}", osName, devices.size());
         return Collections.unmodifiableList(devices);
     }
 
