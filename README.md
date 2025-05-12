@@ -11,7 +11,10 @@ to create unique device profiles. These profiles are useful for analytics, fraud
 - Device identification based on User-Agent headers
 - Track device usage through hit counts
 - Query devices by operating system name
-- Manage device profiles with create (match by User-Agent), Get by ID, and delete by ID
+- Manage device profiles: 
+  - match by User-Agent
+  - Get device by ID
+  - delete device by ID
 - Persistence using Aerospike database
 
 ## API Documentation
