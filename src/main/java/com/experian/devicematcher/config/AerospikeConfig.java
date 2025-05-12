@@ -14,6 +14,8 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
+import java.util.Map;
+
 @Configuration
 public class AerospikeConfig {
     private static final Logger logger = LoggerFactory.getLogger(AerospikeConfig.class);
@@ -51,10 +53,18 @@ public class AerospikeConfig {
         }
     }
 
+    private Map<String, String> binsByIndex() {
+        return Map.of(
+            "osname_idx", "osName"
+        );
+    }
+
     private void createIndex(AerospikeClient client, String namespace, String setName) {
         try {
-            logger.info("Creating Aerospike index | namespace={} setName={}", namespace, setName);
-            client.createIndex(null, namespace, setName, "osname_idx", "osName", IndexType.STRING).waitTillComplete();
+            binsByIndex().forEach((indexName, binName) -> {
+                logger.info("Creating Aerospike Index | namespace={} setName={} indexName={} binName={}", namespace, setName, indexName, binName);
+                client.createIndex(null, namespace, setName, indexName, binName, IndexType.STRING).waitTillComplete();
+            });
         } catch (Exception ex) {
             logger.error("Error creating Aerospike index: {}", ex.getMessage(), ex);
             throw ex;
