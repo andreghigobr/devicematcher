@@ -78,11 +78,12 @@ docker exec -it aerospike asinfo -v "namespaces"
 ```
 2. Test the application
 
-Run Unit Tests
+2.1. Run Unit Tests
 ```bash
 ./gradlew unitTest
 ```
-Run Integration Tests
+
+2.2. Run Integration Tests
 ```bash
 ./gradlew integrationTest
 ```
