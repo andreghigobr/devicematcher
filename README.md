@@ -36,9 +36,9 @@ to create unique device profiles. These profiles are useful for analytics, fraud
 ### Prerequisites
 
 - JDK 21+
-- Gradle
+- Gradle 8+
 - Docker
-- [Aerospike](https://aerospike.com/) server (can be run via Docker)
+- [Aerospike](https://aerospike.com/) server 8.0.0 (can be run via Docker)
 
 ### Setting up Aerospike
 
@@ -86,4 +86,20 @@ docker exec -it aerospike asinfo -v "namespaces"
 
 4. Access the application at `http://localhost:8080`
 
+### Docker Image
 
+if needed, build application docker image
+
+```bash
+docker build -t devicematcher:latest .
+```
+
+run the application in docker container
+
+```bash
+docker run -d --name devicematcher \
+  -p 8080:8080 \
+  -e SPRING_PROFILES_ACTIVE=local \
+  --network=host \
+  devicematcher:latest
+```
