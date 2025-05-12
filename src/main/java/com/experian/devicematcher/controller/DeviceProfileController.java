@@ -30,8 +30,7 @@ public class DeviceProfileController {
     }
 
     @PostMapping(
-        produces = MediaType.APPLICATION_JSON_VALUE,
-        consumes = MediaType.APPLICATION_JSON_VALUE
+        produces = MediaType.APPLICATION_JSON_VALUE
     )
     @Operation(
             summary = "Match a device based on User-Agent",
@@ -110,8 +109,7 @@ public class DeviceProfileController {
 
     @DeleteMapping(
         value = "/{deviceId}",
-        produces = MediaType.APPLICATION_JSON_VALUE,
-        consumes = MediaType.APPLICATION_JSON_VALUE
+        produces = MediaType.APPLICATION_JSON_VALUE
     )
     @Operation(
             summary = "Delete a device profile",
