@@ -10,9 +10,6 @@ public final class DeviceProfile {
     private final String browserName;
     private final String browserVersion;
 
-    // --------------------------------------------
-    // Constructors
-    // --------------------------------------------
     public DeviceProfile(String deviceId, Long hitCount, String osName, String osVersion, String browserName, String browserVersion) {
         this.deviceId = deviceId;
         this.hitCount = hitCount;
@@ -22,9 +19,6 @@ public final class DeviceProfile {
         this.browserVersion = browserVersion;
     }
 
-    // --------------------------------------------
-    // Factory Method
-    // --------------------------------------------
     public static DeviceProfile from(Supplier<String> idSupplier, UserAgent userAgent) {
         return new DeviceProfile(
                 idSupplier.get(),
@@ -36,9 +30,6 @@ public final class DeviceProfile {
         );
     }
 
-    // --------------------------------------------
-    // Update Methods
-    // --------------------------------------------
     public DeviceProfile withHitCount(long hitCount) {
         return new DeviceProfile(
                 deviceId,
@@ -50,7 +41,6 @@ public final class DeviceProfile {
         );
     }
 
-    // --------------------------------------------
     public boolean match(UserAgent userAgent) {
         return this.osName.equalsIgnoreCase(userAgent.getOsName()) &&
                 this.osVersion.equalsIgnoreCase(userAgent.getOsVersion()) &&
@@ -58,9 +48,6 @@ public final class DeviceProfile {
                 this.browserVersion.equalsIgnoreCase(userAgent.getBrowserVersion());
     }
 
-    // --------------------------------------------
-    // Getters
-    // --------------------------------------------
     public String getDeviceId() {
         return deviceId;
     }
@@ -85,9 +72,6 @@ public final class DeviceProfile {
         return browserVersion;
     }
 
-    // --------------------------------------------
-    // Interfaces
-    // --------------------------------------------
     @Override
     public boolean equals(Object obj) {
         if (this == obj) return true;
