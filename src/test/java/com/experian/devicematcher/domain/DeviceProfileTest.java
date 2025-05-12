@@ -2,6 +2,7 @@ package com.experian.devicematcher.domain;
 
 import com.experian.devicematcher.parser.UserAgentParser;
 import com.experian.devicematcher.parser.UserAgentCustomParser;
+import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import ua_parser.Parser;
 
@@ -9,6 +10,7 @@ import java.util.function.Supplier;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+@Tag("unit")
 public class DeviceProfileTest {
     private final Parser uaParser = new Parser();
     private final UserAgentParser userAgentParser = new UserAgentCustomParser(uaParser);

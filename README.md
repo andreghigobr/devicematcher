@@ -54,7 +54,6 @@ You can run it using Docker:
 - make sure aerospike default ports (3000 3001 3003) are available. 
 
 ```bash
-# make sure to be in the root directory of the project
 docker run -d \
   --name aerospike \
   -p 3000:3000 \
@@ -78,8 +77,14 @@ docker exec -it aerospike asinfo -v "namespaces"
 ./gradlew clean build -x test --refresh-dependencies
 ```
 2. Test the application
+
+Run Unit Tests
 ```bash
-./gradlew test
+./gradlew unitTest
+```
+Run Integration Tests
+```bash
+./gradlew integrationTest
 ```
 
 3. Run the application

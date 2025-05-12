@@ -25,6 +25,7 @@ import java.util.List;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
+@Tag("integration")
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @ActiveProfiles("test")
 @TestPropertySource(locations = "classpath:application-test.properties")

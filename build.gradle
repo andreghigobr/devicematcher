@@ -69,6 +69,48 @@ dependencies {
 	testRuntimeOnly "org.junit.platform:junit-platform-launcher"
 }
 
-tasks.named('test') {
-	useJUnitPlatform()
+test {
+	useJUnitPlatform {
+		includeTags 'unit'
+		includeTags 'integration'
+	}
+	systemProperty 'spring.profiles.active', System.getProperty('spring.profiles.active', 'test')
+	testLogging {
+		events "passed", "skipped", "failed"
+		exceptionFormat "full"
+	}
+}
+
+tasks.register('unitTest', Test) {
+	description = 'Runs unit tests.'
+	group = 'verification'
+
+	useJUnitPlatform {
+		includeTags 'unit'
+		excludeTags 'integration'
+	}
+
+	// Integration tests might need more time
+	systemProperty 'spring.profiles.active', System.getProperty('spring.profiles.active', 'test')
+	testLogging {
+		events "passed", "skipped", "failed"
+		exceptionFormat "full"
+	}
+}
+
+tasks.register('integrationTest', Test) {
+	description = 'Runs integration tests.'
+	group = 'verification'
+
+	useJUnitPlatform {
+		excludeTags 'unit'
+		includeTags 'integration'
+	}
+
+	// Integration tests might need more time
+	systemProperty 'spring.profiles.active', System.getProperty('spring.profiles.active', 'test')
+	testLogging {
+		events "passed", "skipped", "failed"
+		exceptionFormat "full"
+	}
 }
