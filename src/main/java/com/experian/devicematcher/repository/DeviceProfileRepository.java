@@ -29,13 +29,12 @@ public interface DeviceProfileRepository {
 
     /**
      * Finds a device profile by its ID.
-     * This method returns an Optional containing the device profile if found, or an empty Optional if not found.
      * @param deviceId  The ID of the device to be found.
      */
     void deleteDeviceById(String deviceId);
 
     /**
-     * Persists a device profile to the repository.
+     * Persists a device profile.
      * This method is used to save a new device profile or update an existing one.
      * @param device The device profile to be persisted.
      */
