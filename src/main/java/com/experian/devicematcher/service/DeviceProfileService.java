@@ -41,6 +41,7 @@ public class DeviceProfileService {
 
             return repository.findDeviceById(deviceId);
         } catch (Exception ex) {
+            logger.error("Error getting device by ID: {}", ex.getMessage(), ex);
             throw new DeviceProfileNotFoundException(ex);
         }
     }
@@ -77,6 +78,7 @@ public class DeviceProfileService {
 
             return repository.findDevicesByOSName(osName.toLowerCase());
         } catch (Exception ex) {
+            logger.error("Error getting devices by OS name: {}", ex.getMessage(), ex);
             throw new DeviceProfileNotFoundException(ex);
         }
     }
@@ -89,6 +91,7 @@ public class DeviceProfileService {
 
             repository.deleteDeviceById(deviceId);
         } catch (Exception ex) {
+            logger.error("Error deleting device by ID: {}", ex.getMessage(),ex);
             throw new DeviceProfileException(ex);
         }
     }
