@@ -87,7 +87,7 @@ docker exec -it aerospike asinfo -v "namespaces"
 ./gradlew bootRun -Dspring.profiles.active=local
 ```
 
-4. Access the application at `http://localhost:8080`
+4. Access the application at [http://localhost:8080](http://localhost:8080)
 
 ### Docker Image
 
