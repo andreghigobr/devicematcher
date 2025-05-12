@@ -34,10 +34,11 @@ public class DeviceProfileService {
 
     public Optional<DeviceProfile> getDeviceById(String deviceId) throws DeviceProfileNotFoundException {
         try {
+            logger.info("Getting Device By ID | deviceId={}", deviceId);
+
             requireNonNull(deviceId, "Device ID cannot be null");
             if (deviceId.isBlank()) throw new IllegalArgumentException("Device ID cannot be blank");
 
-            logger.info("Getting Device By ID | deviceId={}", deviceId);
             return repository.findDeviceById(deviceId);
         } catch (Exception ex) {
             throw new DeviceProfileNotFoundException(ex);
@@ -46,13 +47,12 @@ public class DeviceProfileService {
 
     public DeviceProfile matchDevice(String userAgentString) throws DeviceProfileMatchException {
         try {
+            logger.info("Matching Device by User-Agent | userAgent={}", userAgentString);
+
             requireNonNull(userAgentString, "User-Agent cannot be null");
             if (userAgentString.isBlank()) throw new IllegalArgumentException("User-Agent cannot be blank");
 
-            logger.info("Matching Device by User-Agent | userAgent={}", userAgentString);
-
             var userAgent = userAgentParser.parse(userAgentString);
-
             var device = repository.findDevicesByOSName(userAgent.getOsName().toLowerCase()).stream()
                 .filter(d -> d.match(userAgent))
                 .findFirst().orElseGet(() -> {
@@ -71,10 +71,10 @@ public class DeviceProfileService {
 
     public List<DeviceProfile> getDevicesByOS(String osName) throws DeviceProfileNotFoundException {
         try {
+            logger.info("Getting Device By OS name | osName={}", osName.toLowerCase());
             requireNonNull(osName, "OS Name cannot be null");
             if (osName.isBlank()) throw new IllegalArgumentException("OS Name cannot be blank");
 
-            logger.info("Getting Device By OS name | osName={}", osName.toLowerCase());
             return repository.findDevicesByOSName(osName.toLowerCase());
         } catch (Exception ex) {
             throw new DeviceProfileNotFoundException(ex);
@@ -83,10 +83,10 @@ public class DeviceProfileService {
 
     public void deleteDeviceById(String deviceId) throws DeviceProfileException {
         try {
+            logger.info("Deleting Device By ID | deviceId={}", deviceId);
             requireNonNull(deviceId, "Device ID cannot be null");
             if (deviceId.isBlank()) throw new IllegalArgumentException("Device ID cannot be blank");
 
-            logger.info("Deleting Device By ID | deviceId={}", deviceId);
             repository.deleteDeviceById(deviceId);
         } catch (Exception ex) {
             throw new DeviceProfileException(ex);

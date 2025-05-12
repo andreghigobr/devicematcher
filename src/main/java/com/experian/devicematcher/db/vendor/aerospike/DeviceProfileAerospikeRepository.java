@@ -22,6 +22,9 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
+import static com.experian.devicematcher.db.vendor.aerospike.DeviceProfileBins.HIT_COUNT;
+import static com.experian.devicematcher.db.vendor.aerospike.DeviceProfileBins.OS_NAME;
+
 @Component
 public class DeviceProfileAerospikeRepository implements DeviceProfileRepository {
     private static final Logger logger = LoggerFactory.getLogger(DeviceProfileAerospikeRepository.class);
@@ -61,20 +64,12 @@ public class DeviceProfileAerospikeRepository implements DeviceProfileRepository
         Record record = client.get(defaultPolicy, key);
 
         if (record == null) {
-            logger.warn("Device not found | deviceId={}", deviceId);
+            logger.debug("Device not found | deviceId={}", deviceId);
             return Optional.empty();
         }
 
-        logger.info("Device found | deviceId={}", deviceId);
-        var device = new DeviceProfile(
-                record.getString("deviceId"),
-                record.getLong("hitCount"),
-                record.getString("osName"),
-                record.getString("osVersion"),
-                record.getString("browserName"),
-                record.getString("browserVersion")
-        );
-
+        logger.debug("Device found | deviceId={}", deviceId);
+        var device = DeviceProfileBins.from(record);
         return Optional.of(device);
     }
 
@@ -85,20 +80,13 @@ public class DeviceProfileAerospikeRepository implements DeviceProfileRepository
         Statement statement = new Statement();
         statement.setNamespace(namespace);
         statement.setSetName(setName);
-        statement.setFilter(Filter.equal("osName", osName));
+        statement.setFilter(Filter.equal(OS_NAME, osName));
 
         List<DeviceProfile> devices = new ArrayList<>();
         try (RecordSet recordSet = client.query(queryPolicy, statement)) {
             while (recordSet.next()) {
                 Record record = recordSet.getRecord();
-                var device = new DeviceProfile(
-                    record.getString("deviceId"),
-                    record.getLong("hitCount"),
-                    record.getString("osName"),
-                    record.getString("osVersion"),
-                    record.getString("browserName"),
-                    record.getString("browserVersion")
-                );
+                var device = DeviceProfileBins.from(record);
                 devices.add(device);
             }
         } catch (Exception ex) {
@@ -116,7 +104,7 @@ public class DeviceProfileAerospikeRepository implements DeviceProfileRepository
         boolean isDeleted = client.delete(writePolicy, key);
 
         if (isDeleted) {
-            logger.info("Device deleted successfully on Aerospike | deviceId={}", deviceId);
+            logger.debug("Device deleted successfully on Aerospike | deviceId={}", deviceId);
         } else {
             logger.warn("Device not found for deletion on Aerospike | deviceId={}", deviceId);
         }
@@ -126,18 +114,8 @@ public class DeviceProfileAerospikeRepository implements DeviceProfileRepository
     public void persistDevice(DeviceProfile device) {
         logger.info("Persisting device profile into Aerospike | device={}", device);
         Key key = new Key(namespace, setName, device.getDeviceId());
-
-        Bin[] bins = new Bin[]{
-            new Bin("deviceId", device.getDeviceId()),
-            new Bin("hitCount", device.getHitCount()),
-            new Bin("osName", device.getOsName().toLowerCase()),
-            new Bin("osVersion", device.getOsVersion()),
-            new Bin("browserName", device.getBrowserName().toLowerCase()),
-            new Bin("browserVersion", device.getBrowserVersion()),
-        };
-
-        client.put(writePolicy, key, bins);
-        logger.info("Device device profile persisted into Aerospike | device={}", device);
+        client.put(writePolicy, key, DeviceProfileBins.toBins(device));
+        logger.debug("Device device profile persisted into Aerospike | device={}", device);
     }
 
     @Override
@@ -147,12 +125,12 @@ public class DeviceProfileAerospikeRepository implements DeviceProfileRepository
         Key key = new Key(namespace, setName, deviceId);
         var record = client.operate(
                 writePolicy, key,
-                Operation.add(new Bin("hitCount", 1L)),
-                Operation.get("hitCount")
+                Operation.add(new Bin(HIT_COUNT, 1L)),
+                Operation.get(HIT_COUNT)
         );
 
-        var updatedHitCount = record.getLong("hitCount");
-        logger.info("Device HitCount updated | deviceId={} | updatedHitCount={}", deviceId, updatedHitCount);
+        var updatedHitCount = record.getLong(HIT_COUNT);
+        logger.debug("Device HitCount updated | deviceId={} | updatedHitCount={}", deviceId, updatedHitCount);
         return updatedHitCount;
     }
 }
