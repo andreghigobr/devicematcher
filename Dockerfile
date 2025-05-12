@@ -5,7 +5,7 @@ COPY . .
 RUN ./gradlew build --no-daemon -x test
 
 # Runtime stage
-FROM openjdk:21.0.2-jdk
+FROM openjdk:21-jdk
 WORKDIR /app
 
 # Copy the built jar from the build stage
