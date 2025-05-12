@@ -17,25 +17,52 @@ repositories {
 	mavenCentral()
 }
 
+ext {
+	// Spring
+	springBootVersion = '3.4.5'
+
+	// Libraries
+	uapJavaVersion = '1.6.1'
+	commonsLangVersion = '3.12.0'
+	jacksonVersion = '2.15.2'
+
+	// Database
+	aerospikeVersion = '8.0.0'
+
+	// Documentation
+	// springdocVersion = '2.3.0'
+	springdocVersion = '2.8.6'
+
+	// Testing
+	testcontainersVersion = '1.19.7'
+}
+
 dependencies {
-	implementation 'com.github.ua-parser:uap-java:1.6.1'
-	implementation 'io.springfox:springfox-boot-starter:3.0.0'
-	implementation 'org.apache.commons:commons-lang3:3.12.0'
-	implementation 'org.springframework.boot:spring-boot-starter-validation'
-	implementation 'com.fasterxml.jackson.core:jackson-databind:2.15.2'
-	implementation 'com.fasterxml.jackson.core:jackson-annotations:2.15.2'
-	implementation 'com.fasterxml.jackson.core:jackson-core:2.15.2'
-	implementation 'com.fasterxml.jackson.module:jackson-module-parameter-names:2.15.2'
-	implementation 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.15.2'
+	// libs
+	implementation "com.github.ua-parser:uap-java:${uapJavaVersion}"
+	implementation "org.apache.commons:commons-lang3:${commonsLangVersion}"
+	implementation "com.fasterxml.jackson.core:jackson-databind:${jacksonVersion}"
+	implementation "com.fasterxml.jackson.core:jackson-annotations:${jacksonVersion}"
+	implementation "com.fasterxml.jackson.core:jackson-core:${jacksonVersion}"
+	implementation "com.fasterxml.jackson.module:jackson-module-parameter-names:${jacksonVersion}"
+	implementation "com.fasterxml.jackson.datatype:jackson-datatype-jsr310:${jacksonVersion}"
 
-	implementation 'com.aerospike:aerospike-client:8.0.0'
+	// database
+	implementation "com.aerospike:aerospike-client:${aerospikeVersion}"
 
-	implementation 'org.springframework.boot:spring-boot-starter'
-	implementation 'org.springframework.boot:spring-boot-starter-web'
-	testImplementation 'org.springframework.boot:spring-boot-starter-test'
-	testImplementation 'org.testcontainers:testcontainers:1.19.7'
-	testImplementation 'org.testcontainers:junit-jupiter:1.19.7'
-	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+	// api docs / swagger
+	implementation "org.springdoc:springdoc-openapi-starter-webmvc-ui:${springdocVersion}"
+
+	// spring boot
+	implementation "org.springframework.boot:spring-boot-starter-validation"
+	implementation "org.springframework.boot:spring-boot-starter"
+	implementation "org.springframework.boot:spring-boot-starter-web"
+
+	// tests
+	testImplementation "org.springframework.boot:spring-boot-starter-test"
+	testImplementation "org.testcontainers:testcontainers:${testcontainersVersion}"
+	testImplementation "org.testcontainers:junit-jupiter:${testcontainersVersion}"
+	testRuntimeOnly "org.junit.platform:junit-platform-launcher"
 }
 
 tasks.named('test') {
