@@ -16,9 +16,8 @@ to create unique device profiles. These profiles are useful for analytics, fraud
 
 ## API Documentation
 
-The API documentation is available at [Swagger UI](http://localhost:8080/swagger-ui/index.html).
-
-The API endpoints is available at [Postman Collection](docs/devicematcher.postman_collection.json).
+- [Swagger UI](http://localhost:8080/swagger-ui/index.html).
+- [Postman Collection](docs/devicematcher.postman_collection.json).
 
 ## Technologies
 
