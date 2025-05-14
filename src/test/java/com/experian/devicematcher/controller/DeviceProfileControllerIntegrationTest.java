@@ -21,6 +21,8 @@ import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.utility.DockerImageName;
 
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
+import java.util.stream.IntStream;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -158,6 +160,37 @@ public class DeviceProfileControllerIntegrationTest {
         assertEquals(userAgent.getOsVersion(), response.getBody().getOsVersion());
         assertEquals(userAgent.getBrowserName(), response.getBody().getBrowserName());
         assertEquals(userAgent.getBrowserVersion(), response.getBody().getBrowserVersion());
+    }
+
+    @Test
+    public void matchDevice_stressTestParallel() throws Exception {
+        // Arrange
+        var userAgentString = "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/116.0.5845.110 Safari/537.36 Edg/116.0.1938.69";
+        var userAgent = userAgentParser.parse(userAgentString);
+
+        ResponseEntity<DeviceProfileDTO> firstResponse = matchDevice(userAgentString);
+        String deviceId = firstResponse.getBody().getDeviceId();
+
+        List<CompletableFuture<Void>> futures = IntStream.range(0, 5)
+            .mapToObj(i -> CompletableFuture.runAsync(() -> {
+                // Each task does 200 requests (1000 total across 5 tasks)
+                IntStream.range(0, 200).forEach(j -> matchDevice(userAgentString));
+            }))
+            .toList();
+
+        CompletableFuture.allOf(futures.toArray(new CompletableFuture[0])).join();
+
+        ResponseEntity<DeviceProfileDTO> finalResponse = getDeviceById(deviceId);
+
+        // Assert
+        assertEquals(HttpStatus.OK, finalResponse.getStatusCode());
+        assertNotNull(finalResponse.getBody());
+        assertEquals(deviceId, finalResponse.getBody().getDeviceId());
+        assertEquals(1001L, finalResponse.getBody().getHitCount());
+        assertEquals(userAgent.getOsName(), finalResponse.getBody().getOsName());
+        assertEquals(userAgent.getOsVersion(), finalResponse.getBody().getOsVersion());
+        assertEquals(userAgent.getBrowserName(), finalResponse.getBody().getBrowserName());
+        assertEquals(userAgent.getBrowserVersion(), finalResponse.getBody().getBrowserVersion());
     }
 
     @Test
