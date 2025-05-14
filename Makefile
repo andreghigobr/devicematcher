@@ -7,12 +7,13 @@ AEROSPIKE_NAMESPACE=devicematcher
 AEROSPIKE_CONFIG_FILE=config/aerospike.conf
 APP_PORT=8080
 APP_DOCKER_PORT=8080
-APP_CONTAINER=devicematcher-app
+APP_CONTAINER=devicematcher
 SPRING_PROFILES_ACTIVE=local
 
 # Default target
 help:
 	@echo "Available commands:"
+	@echo "  make all              - clean, build, test, aerospike-start docker-run"
 	@echo "  make build            - Build the application"
 	@echo "  make clean            - Clean build artifacts"
 	@echo "  make test             - Run tests"
@@ -27,9 +28,13 @@ help:
 	@echo "  make docker-run       - Start application in Docker container"
 	@echo "  make docker-stop      - Stop application Docker container"
 
+# Run all common tasks in sequence
+all: clean build test aerospike-start docker-run
+ @echo "Completed all tasks: clean, build, test, aerospike-start docker-run"
+
 # Build the application
 build:
-	./gradlew build -x test --refresh-dependencies
+	./gradlew build -x test
 
 # Clean build artifacts
 clean:

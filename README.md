@@ -74,7 +74,7 @@ docker exec -it aerospike asinfo -v "namespaces"
 1. Build 
 
 ```bash
-./gradlew clean build -x test --refresh-dependencies
+./gradlew clean build -x test
 ```
 2. Test the application
 
