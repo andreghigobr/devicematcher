@@ -8,10 +8,9 @@ package com.experian.devicematcher.domain;
  */
 public interface DeviceIdGenerator {
     /**
-     * Generates a unique device ID.
-     * This method should return a string representation of the device ID.
-     * The generated ID should be unique and suitable for identifying a device.
+     * Generates a unique device ID based on the provided user agent.
+     * @param userAgent the user agent to base the ID on
      * @return a unique device ID as a string
      */
-    public String generateId();
+    String newId(UserAgent userAgent);
 }

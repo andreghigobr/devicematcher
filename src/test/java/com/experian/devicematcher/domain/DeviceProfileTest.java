@@ -24,11 +24,11 @@ public class DeviceProfileTest {
 
         var device = DeviceProfile.from(idSupplier, userAgent);
 
-        assertEquals(idSupplier.get(), device.getDeviceId());
-        assertEquals(userAgent.getOsName(), device.getOsName());
-        assertEquals(userAgent.getOsVersion(), device.getOsVersion());
-        assertEquals(userAgent.getBrowserName(), device.getBrowserName());
-        assertEquals(userAgent.getBrowserVersion(), device.getBrowserVersion());
+        assertEquals(idSupplier.get(), device.deviceId());
+        assertEquals(userAgent.getOsName(), device.osName());
+        assertEquals(userAgent.getOsVersion(), device.osVersion());
+        assertEquals(userAgent.getBrowserName(), device.browserName());
+        assertEquals(userAgent.getBrowserVersion(), device.browserVersion());
     }
 
     @Test

@@ -26,12 +26,12 @@ public class DeviceProfileBins {
 
     public static Bin[] toBins(DeviceProfile device) {
         return new Bin[] {
-            new Bin(DEVICE_ID, device.getDeviceId()),
-            new Bin(HIT_COUNT, device.getHitCount()),
-            new Bin(OS_NAME, device.getOsName()),
-            new Bin(OS_VERSION, device.getOsVersion()),
-            new Bin(BROWSER_NAME, device.getBrowserName()),
-            new Bin(BROWSER_VERSION, device.getBrowserVersion())
+            new Bin(DEVICE_ID, device.deviceId()),
+            new Bin(HIT_COUNT, device.hitCount()),
+            new Bin(OS_NAME, device.osName()),
+            new Bin(OS_VERSION, device.osVersion()),
+            new Bin(BROWSER_NAME, device.browserName()),
+            new Bin(BROWSER_VERSION, device.browserVersion())
         };
     }
 }

@@ -2,23 +2,14 @@ package com.experian.devicematcher.domain;
 
 import java.util.function.Supplier;
 
-public final class DeviceProfile {
-    private final String deviceId;
-    private final Long hitCount;
-    private final String osName;
-    private final String osVersion;
-    private final String browserName;
-    private final String browserVersion;
-
-    public DeviceProfile(String deviceId, Long hitCount, String osName, String osVersion, String browserName, String browserVersion) {
-        this.deviceId = deviceId;
-        this.hitCount = hitCount;
-        this.osName = osName;
-        this.osVersion = osVersion;
-        this.browserName = browserName;
-        this.browserVersion = browserVersion;
-    }
-
+public record DeviceProfile(
+        String deviceId,
+        Long hitCount,
+        String osName,
+        String osVersion,
+        String browserName,
+        String browserVersion
+) {
     public static DeviceProfile from(Supplier<String> idSupplier, UserAgent userAgent) {
         return new DeviceProfile(
                 idSupplier.get(),
@@ -30,10 +21,10 @@ public final class DeviceProfile {
         );
     }
 
-    public DeviceProfile withHitCount(long hitCount) {
+    public DeviceProfile withHitCount(long updatedHitCount) {
         return new DeviceProfile(
                 deviceId,
-                hitCount,
+                updatedHitCount,
                 osName,
                 osVersion,
                 browserName,
@@ -48,42 +39,13 @@ public final class DeviceProfile {
                 this.browserVersion.equalsIgnoreCase(userAgent.getBrowserVersion());
     }
 
-    public String getDeviceId() {
-        return deviceId;
-    }
-
-    public Long getHitCount() {
-        return hitCount;
-    }
-
-    public String getOsName() {
-        return osName;
-    }
-
-    public String getOsVersion() {
-        return osVersion;
-    }
-
-    public String getBrowserName() {
-        return browserName;
-    }
-
-    public String getBrowserVersion() {
-        return browserVersion;
-    }
-
     @Override
     public boolean equals(Object obj) {
         if (this == obj) return true;
         if (obj == null || getClass() != obj.getClass()) return false;
         DeviceProfile that = (DeviceProfile) obj;
 
-        return deviceId.equals(that.deviceId) &&
-                hitCount.equals(that.hitCount) &&
-                osName.equals(that.osName) &&
-                osVersion.equals(that.osVersion) &&
-                browserName.equals(that.browserName) &&
-                browserVersion.equals(that.browserVersion);
+        return deviceId.equals(that.deviceId);
     }
 
     @Override

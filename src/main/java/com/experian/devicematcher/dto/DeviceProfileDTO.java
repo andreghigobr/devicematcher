@@ -2,10 +2,7 @@ package com.experian.devicematcher.dto;
 
 import com.experian.devicematcher.domain.DeviceProfile;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
-
-import java.util.UUID;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class DeviceProfileDTO {
@@ -29,12 +26,12 @@ public class DeviceProfileDTO {
 
     public static DeviceProfileDTO from(DeviceProfile deviceProfile) {
         return new DeviceProfileDTO(
-                deviceProfile.getDeviceId(),
-                deviceProfile.getHitCount(),
-                deviceProfile.getOsName(),
-                deviceProfile.getOsVersion(),
-                deviceProfile.getBrowserName(),
-                deviceProfile.getBrowserVersion()
+                deviceProfile.deviceId(),
+                deviceProfile.hitCount(),
+                deviceProfile.osName(),
+                deviceProfile.osVersion(),
+                deviceProfile.browserName(),
+                deviceProfile.browserVersion()
         );
     }
 

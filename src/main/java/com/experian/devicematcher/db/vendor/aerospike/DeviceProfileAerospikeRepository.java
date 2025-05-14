@@ -4,6 +4,7 @@ import com.aerospike.client.*;
 import com.aerospike.client.Record;
 import com.aerospike.client.exp.Exp;
 import com.aerospike.client.policy.QueryPolicy;
+import com.aerospike.client.query.Filter;
 import com.aerospike.client.query.RecordSet;
 import com.aerospike.client.query.Statement;
 import com.experian.devicematcher.domain.DeviceProfile;
@@ -103,12 +104,9 @@ public class DeviceProfileAerospikeRepository implements DeviceProfileRepository
         var stmt = new Statement();
         stmt.setNamespace(namespace);
         stmt.setSetName(setName);
+        stmt.setFilter(Filter.equal(OS_NAME, osName.toLowerCase()));
 
         var policy = policies.newQueryPolicy();
-        policy.filterExp = Exp.build(
-            Exp.eq(Exp.stringBin(OS_NAME), Exp.val(osName.toLowerCase()))
-        );
-
         List<DeviceProfile> devices = new ArrayList<>();
         try (RecordSet recordSet = client.query(policy, stmt)) {
             while (recordSet.next()) {
@@ -142,7 +140,7 @@ public class DeviceProfileAerospikeRepository implements DeviceProfileRepository
     @Override
     public void persistDeviceProfile(DeviceProfile device) {
         logger.info("Persisting device profile into Aerospike | device={}", device);
-        Key key = new Key(namespace, setName, device.getDeviceId());
+        Key key = new Key(namespace, setName, device.deviceId());
         var policy = policies.newWritePolicy();
         client.put(policy, key, DeviceProfileBins.toBins(device));
         logger.debug("Device device profile persisted into Aerospike | device={}", device);

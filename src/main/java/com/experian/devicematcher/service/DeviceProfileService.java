@@ -32,6 +32,7 @@ public class DeviceProfileService implements IDeviceProfileService {
         this.repository = repository;
     }
 
+    @Override
     public Optional<DeviceProfile> getDeviceById(String deviceId) throws DeviceProfileException {
         try {
             logger.info("Getting Device By ID | deviceId={}", deviceId);
@@ -46,6 +47,7 @@ public class DeviceProfileService implements IDeviceProfileService {
         }
     }
 
+    @Override
     public DeviceProfile matchDevice(String userAgentString) throws DeviceProfileException {
         try {
             logger.info("Matching Device by User-Agent | userAgent={}", userAgentString);
@@ -57,12 +59,12 @@ public class DeviceProfileService implements IDeviceProfileService {
 
             var device = repository.findDeviceProfiles(userAgent).stream()
                 .findFirst().orElseGet(() -> {
-                    var d = DeviceProfile.from(deviceIdGenerator::generateId, userAgent);
+                    var d = DeviceProfile.from(() -> deviceIdGenerator.newId(userAgent), userAgent);
                     repository.persistDeviceProfile(d);
                     return d;
                 });
 
-            long hitCount = repository.incrementHitCount(device.getDeviceId());
+            long hitCount = repository.incrementHitCount(device.deviceId());
             return device.withHitCount(hitCount);
         } catch (Exception ex) {
             logger.error("Error matching device by User-Agent: {}", ex.getMessage(), ex);
@@ -70,6 +72,7 @@ public class DeviceProfileService implements IDeviceProfileService {
         }
     }
 
+    @Override
     public List<DeviceProfile> getDevicesByOS(String osName) throws DeviceProfileException {
         try {
             logger.info("Getting Device By OS name | osName={}", osName.toLowerCase());
@@ -83,6 +86,7 @@ public class DeviceProfileService implements IDeviceProfileService {
         }
     }
 
+    @Override
     public void deleteDeviceById(String deviceId) throws DeviceProfileException {
         try {
             logger.info("Deleting Device By ID | deviceId={}", deviceId);

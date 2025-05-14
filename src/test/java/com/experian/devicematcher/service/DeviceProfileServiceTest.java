@@ -5,7 +5,6 @@ import com.experian.devicematcher.domain.DeviceProfile;
 import com.experian.devicematcher.domain.UserAgent;
 import com.experian.devicematcher.exceptions.DeviceProfileException;
 import com.experian.devicematcher.exceptions.DeviceProfileMatchException;
-import com.experian.devicematcher.exceptions.DeviceProfileNotFoundException;
 import com.experian.devicematcher.parser.UserAgentParser;
 import com.experian.devicematcher.repository.DeviceProfileRepository;
 import org.junit.jupiter.api.BeforeEach;
@@ -84,11 +83,11 @@ public class DeviceProfileServiceTest {
 
         // Assert
         Assert.isTrue(result.isPresent(), "Device should be present for valid ID");
-        Assert.isTrue(result.get().getDeviceId().equals(deviceId), "Device ID should match");
-        Assert.isTrue(result.get().getOsName().equals("Windows"), "OS Name should match");
-        Assert.isTrue(result.get().getOsVersion().equals("10"), "OS Version should match");
-        Assert.isTrue(result.get().getBrowserName().equals("Chrome"), "Browser Name should match");
-        Assert.isTrue(result.get().getBrowserVersion().equals("90"), "Browser Version should match");
+        Assert.isTrue(result.get().deviceId().equals(deviceId), "Device ID should match");
+        Assert.isTrue(result.get().osName().equals("Windows"), "OS Name should match");
+        Assert.isTrue(result.get().osVersion().equals("10"), "OS Version should match");
+        Assert.isTrue(result.get().browserName().equals("Chrome"), "Browser Name should match");
+        Assert.isTrue(result.get().browserVersion().equals("90"), "Browser Version should match");
         verify(repository, times(1)).findDeviceProfileById(deviceId);
         verifyNoMoreInteractions(repository);
         verifyNoMoreInteractions(userAgentParser);
@@ -97,15 +96,15 @@ public class DeviceProfileServiceTest {
     @Test
     public void matchDevice_WhenInvalidUserAgent_ThenThrowsException() throws Exception {
         // Arrange
-        String userAgent = "MozilxxxxxxxxxINVALIDxxxxxxxxxx5.110 Mobilexxxxxari/537.36";
-        when(userAgentParser.parse(userAgent)).thenThrow(new IllegalArgumentException("Invalid User Agent"));
+        String userAgentString = "MozilxxxxxxxxxINVALIDxxxxxxxxxx5.110 Mobilexxxxxari/537.36";
+        when(userAgentParser.parse(userAgentString)).thenThrow(new IllegalArgumentException("Invalid User Agent"));
 
         // Act & Assert
-        assertThrows(DeviceProfileMatchException.class, () -> { service.matchDevice(userAgent); });
-        verify(userAgentParser, times(1)).parse(userAgent);
+        assertThrows(DeviceProfileMatchException.class, () -> { service.matchDevice(userAgentString); });
+        verify(userAgentParser, times(1)).parse(userAgentString);
         verify(repository, times(0)).persistDeviceProfile(any());
         verify(repository, times(0)).persistDeviceProfile(any());
-        verify(deviceIdGenerator, times(0)).generateId();
+        verify(deviceIdGenerator, times(0)).newId(any(UserAgent.class));
     }
 
     @Test
@@ -116,32 +115,31 @@ public class DeviceProfileServiceTest {
         var osVersion = "16.0.0";
         var browserName = "Safari";
         var browserVersion = "16.0.0";
-        var deviceId = UUID.randomUUID().toString();
         var initialHitCount = 0L;
 
+        var deviceId = osName + "-" + UUID.randomUUID().toString();
         var userAgent = new UserAgent(osName, osVersion, browserName, browserVersion);
-        var deviceProfile = new DeviceProfile(deviceId, initialHitCount, osName, osVersion, browserName, browserVersion);
         when(userAgentParser.parse(ua)).thenReturn(userAgent);
         when(repository.findDeviceProfilesByOSName(osName.toLowerCase())).thenReturn(List.of());
         when(repository.incrementHitCount(deviceId)).thenReturn(initialHitCount + 1L);
-        when(deviceIdGenerator.generateId()).thenReturn(deviceId);
+        when(deviceIdGenerator.newId(userAgent)).thenReturn(deviceId);
 
         // Act
         var device = service.matchDevice(ua);
 
         // Assert
-        assertEquals(deviceId, device.getDeviceId(), "Device ID should match");
-        assertEquals(initialHitCount + 1, device.getHitCount(), "Device hit count should be 1 for new devices");
-        assertEquals(osName.toLowerCase(), device.getOsName(), "OS Name should match");
-        assertEquals(osVersion, device.getOsVersion(), "OS Version should match");
-        assertEquals(browserName.toLowerCase(), device.getBrowserName(), "Browser Name should match");
-        assertEquals(browserVersion, device.getBrowserVersion(), "Browser Version should match");
+        assertEquals(deviceId, device.deviceId(), "Device ID should match");
+        assertEquals(initialHitCount + 1, device.hitCount(), "Device hit count should be 1 for new devices");
+        assertEquals(osName.toLowerCase(), device.osName(), "OS Name should match");
+        assertEquals(osVersion, device.osVersion(), "OS Version should match");
+        assertEquals(browserName.toLowerCase(), device.browserName(), "Browser Name should match");
+        assertEquals(browserVersion, device.browserVersion(), "Browser Version should match");
 
         verify(userAgentParser, times(1)).parse(ua);
         verify(repository, times(1)).findDeviceProfiles(userAgent);
         verify(repository, times(1)).persistDeviceProfile(any(DeviceProfile.class));
         verify(repository, times(1)).incrementHitCount(deviceId);
-        verify(deviceIdGenerator, times(1)).generateId();
+        verify(deviceIdGenerator, times(1)).newId(userAgent);
         verifyNoMoreInteractions(repository);
         verifyNoMoreInteractions(userAgentParser);
         verifyNoMoreInteractions(deviceIdGenerator);
@@ -165,24 +163,24 @@ public class DeviceProfileServiceTest {
         // findDeviceProfiles
         when(repository.findDeviceProfiles(userAgent)).thenReturn(List.of(deviceProfile));
         when(repository.incrementHitCount(deviceId)).thenReturn(initialHitCount + 1L);
-        when(deviceIdGenerator.generateId()).thenReturn(deviceId);
+        when(deviceIdGenerator.newId(userAgent)).thenReturn(deviceId);
 
         // Act
         var device = service.matchDevice(ua);
 
         // Assert
-        assertEquals(deviceId, device.getDeviceId(), "Device ID should match");
-        assertEquals(initialHitCount + 1, device.getHitCount(), "Device hit count should be 1 for new devices");
-        assertEquals(osName.toLowerCase(), device.getOsName().toLowerCase(), "OS Name should match");
-        assertEquals(osVersion, device.getOsVersion(), "OS Version should match");
-        assertEquals(browserName.toLowerCase(), device.getBrowserName().toLowerCase(), "Browser Name should match");
-        assertEquals(browserVersion, device.getBrowserVersion(), "Browser Version should match");
+        assertEquals(deviceId, device.deviceId(), "Device ID should match");
+        assertEquals(initialHitCount + 1, device.hitCount(), "Device hit count should be 1 for new devices");
+        assertEquals(osName.toLowerCase(), device.osName().toLowerCase(), "OS Name should match");
+        assertEquals(osVersion, device.osVersion(), "OS Version should match");
+        assertEquals(browserName.toLowerCase(), device.browserName().toLowerCase(), "Browser Name should match");
+        assertEquals(browserVersion, device.browserVersion(), "Browser Version should match");
 
         verify(userAgentParser, times(1)).parse(ua);
         verify(repository, times(0)).persistDeviceProfile(any(DeviceProfile.class));
         verify(repository, times(1)).incrementHitCount(deviceId);
         verify(repository, times(1)).findDeviceProfiles(any(UserAgent.class));
-        verify(deviceIdGenerator, times(0)).generateId();
+        verify(deviceIdGenerator, times(0)).newId(any(UserAgent.class));
         verifyNoMoreInteractions(repository);
         verifyNoMoreInteractions(userAgentParser);
         verifyNoMoreInteractions(deviceIdGenerator);
@@ -225,12 +223,12 @@ public class DeviceProfileServiceTest {
         var devices = service.getDevicesByOS(osName);
 
         assertEquals(1, devices.size(), "Device list should contain 1 device");
-        assertEquals(device.getDeviceId(), devices.getFirst().getDeviceId(), "Device ID should match");
-        assertEquals(device.getOsName(), devices.getFirst().getOsName(), "OS Name should match");
-        assertEquals(device.getOsVersion(), devices.getFirst().getOsVersion(), "OS Version should match");
-        assertEquals(device.getBrowserName(), devices.getFirst().getBrowserName(), "Browser Name should match");
-        assertEquals(device.getBrowserVersion(), devices.getFirst().getBrowserVersion(), "Browser Version should match");
-        assertEquals(device.getHitCount(), devices.getFirst().getHitCount(), "Hit Count should match");
+        assertEquals(device.deviceId(), devices.getFirst().deviceId(), "Device ID should match");
+        assertEquals(device.osName(), devices.getFirst().osName(), "OS Name should match");
+        assertEquals(device.osVersion(), devices.getFirst().osVersion(), "OS Version should match");
+        assertEquals(device.browserName(), devices.getFirst().browserName(), "Browser Name should match");
+        assertEquals(device.browserVersion(), devices.getFirst().browserVersion(), "Browser Version should match");
+        assertEquals(device.hitCount(), devices.getFirst().hitCount(), "Hit Count should match");
 
         verify(repository, times(1)).findDeviceProfilesByOSName(osName.toLowerCase());
         verifyNoMoreInteractions(repository);
