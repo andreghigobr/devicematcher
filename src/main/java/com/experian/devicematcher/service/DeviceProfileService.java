@@ -1,102 +1,43 @@
 package com.experian.devicematcher.service;
 
-import com.experian.devicematcher.domain.DeviceIdGenerator;
 import com.experian.devicematcher.domain.DeviceProfile;
-import com.experian.devicematcher.exceptions.DeviceProfileDeleteException;
 import com.experian.devicematcher.exceptions.DeviceProfileException;
-import com.experian.devicematcher.exceptions.DeviceProfileMatchException;
-import com.experian.devicematcher.parser.UserAgentParser;
-import com.experian.devicematcher.repository.DeviceProfileRepository;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
 
-import static java.util.Objects.requireNonNull;
 
-@Service
-public class DeviceProfileService implements IDeviceProfileService {
-    private static final Logger logger = LoggerFactory.getLogger(DeviceProfileService.class);
+public interface DeviceProfileService {
+    /**
+     * Get a list of all device profiles
+     * @param deviceId The ID of the device to be found
+     * @return A list of device profiles
+     * @throws DeviceProfileException if an error occurs while retrieving the device profiles
+     */
+    Optional<DeviceProfile> getDeviceById(String deviceId) throws DeviceProfileException;
 
-    private final DeviceIdGenerator deviceIdGenerator;
-    private final UserAgentParser userAgentParser;
-    private final DeviceProfileRepository repository;
+    /**
+     * Match a device profile based on the user agent string
+     * Example: "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.3"
+     * @param userAgentString The user agent string to match
+     * @return A device profile that matches the user agent string
+     * @throws DeviceProfileException if an error occurs while matching the device profile
+     */
+    DeviceProfile matchDevice(String userAgentString) throws DeviceProfileException;
 
-    @Autowired
-    public DeviceProfileService(DeviceIdGenerator deviceIdGenerator, UserAgentParser userAgentParser, DeviceProfileRepository repository) {
-        this.deviceIdGenerator = deviceIdGenerator;
-        this.userAgentParser = userAgentParser;
-        this.repository = repository;
-    }
+    /**
+     * Get a list of device profiles that match the given OS name
+     * @param osName The OS name to match
+     * Example: "Windows 10" "Linux"
+     * @return A list of device profiles that match the OS name
+     * @throws DeviceProfileException if an error occurs while retrieving the device profiles by OS name
+     */
+    List<DeviceProfile> getDevicesByOS(String osName) throws DeviceProfileException;
 
-    @Override
-    public Optional<DeviceProfile> getDeviceById(String deviceId) throws DeviceProfileException {
-        try {
-            logger.info("Getting Device By ID | deviceId={}", deviceId);
-
-            requireNonNull(deviceId, "Device ID cannot be null");
-            if (deviceId.isBlank()) throw new IllegalArgumentException("Device ID cannot be blank");
-
-            return repository.findDeviceProfileById(deviceId);
-        } catch (Exception ex) {
-            logger.error("Error getting device by ID: {}", ex.getMessage(), ex);
-            throw new DeviceProfileException(ex);
-        }
-    }
-
-    @Override
-    public DeviceProfile matchDevice(String userAgentString) throws DeviceProfileException {
-        try {
-            logger.info("Matching Device by User-Agent | userAgent={}", userAgentString);
-
-            requireNonNull(userAgentString, "User-Agent cannot be null");
-            if (userAgentString.isBlank()) throw new IllegalArgumentException("User-Agent cannot be blank");
-
-            var userAgent = userAgentParser.parse(userAgentString);
-
-            var device = repository.findDeviceProfiles(userAgent).stream()
-                .findFirst().orElseGet(() -> {
-                    var d = DeviceProfile.from(() -> deviceIdGenerator.newId(userAgent), userAgent);
-                    repository.persistDeviceProfile(d);
-                    return d;
-                });
-
-            long hitCount = repository.incrementHitCount(device.deviceId());
-            return device.withHitCount(hitCount);
-        } catch (Exception ex) {
-            logger.error("Error matching device by User-Agent: {}", ex.getMessage(), ex);
-            throw new DeviceProfileMatchException(ex);
-        }
-    }
-
-    @Override
-    public List<DeviceProfile> getDevicesByOS(String osName) throws DeviceProfileException {
-        try {
-            logger.info("Getting Device By OS name | osName={}", osName.toLowerCase());
-            requireNonNull(osName, "OS Name cannot be null");
-            if (osName.isBlank()) throw new IllegalArgumentException("OS Name cannot be blank");
-
-            return repository.findDeviceProfilesByOSName(osName.toLowerCase());
-        } catch (Exception ex) {
-            logger.error("Error getting devices by OS name: {}", ex.getMessage(), ex);
-            throw new DeviceProfileException(ex);
-        }
-    }
-
-    @Override
-    public void deleteDeviceById(String deviceId) throws DeviceProfileException {
-        try {
-            logger.info("Deleting Device By ID | deviceId={}", deviceId);
-            requireNonNull(deviceId, "Device ID cannot be null");
-            if (deviceId.isBlank()) throw new IllegalArgumentException("Device ID cannot be blank");
-
-            repository.deleteDeviceProfileById(deviceId);
-        } catch (Exception ex) {
-            logger.error("Error deleting device by ID: {}", ex.getMessage(),ex);
-            throw new DeviceProfileDeleteException(ex);
-        }
-    }
+    /**
+     * Delete a device profile by ID
+     * @param deviceId The ID of the device to be deleted
+     * @throws DeviceProfileException if an error occurs while deleting the device profile
+     */
+    void deleteDeviceById(String deviceId) throws DeviceProfileException;
 }

@@ -6,7 +6,7 @@ package com.experian.devicematcher.domain;
  * Implementations of this interface can provide different strategies for generating device IDs.
  * For example, a UUID generator or a hash-based generator.
  */
-public interface DeviceIdGenerator {
+public interface DeviceProfileIdGenerator {
     /**
      * Generates a unique device ID based on the provided user agent.
      * @param userAgent the user agent to base the ID on

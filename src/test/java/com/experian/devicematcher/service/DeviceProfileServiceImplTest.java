@@ -1,6 +1,6 @@
 package com.experian.devicematcher.service;
 
-import com.experian.devicematcher.domain.DeviceIdGenerator;
+import com.experian.devicematcher.domain.DeviceProfileIdGenerator;
 import com.experian.devicematcher.domain.DeviceProfile;
 import com.experian.devicematcher.domain.UserAgent;
 import com.experian.devicematcher.exceptions.DeviceProfileException;
@@ -24,7 +24,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.*;
 
 @Tag("unit")
-public class DeviceProfileServiceTest {
+public class DeviceProfileServiceImplTest {
     @Mock
     private UserAgentParser userAgentParser;
 
@@ -32,10 +32,10 @@ public class DeviceProfileServiceTest {
     private DeviceProfileRepository repository;
 
     @Mock
-    private DeviceIdGenerator deviceIdGenerator;
+    private DeviceProfileIdGenerator deviceProfileIdGenerator;
 
     @InjectMocks
-    private DeviceProfileService service;
+    private DeviceProfileServiceImpl service;
 
     @BeforeEach
     void setUp() {
@@ -104,7 +104,7 @@ public class DeviceProfileServiceTest {
         verify(userAgentParser, times(1)).parse(userAgentString);
         verify(repository, times(0)).persistDeviceProfile(any());
         verify(repository, times(0)).persistDeviceProfile(any());
-        verify(deviceIdGenerator, times(0)).newId(any(UserAgent.class));
+        verify(deviceProfileIdGenerator, times(0)).newId(any(UserAgent.class));
     }
 
     @Test
@@ -122,7 +122,7 @@ public class DeviceProfileServiceTest {
         when(userAgentParser.parse(ua)).thenReturn(userAgent);
         when(repository.findDeviceProfilesByOSName(osName.toLowerCase())).thenReturn(List.of());
         when(repository.incrementHitCount(deviceId)).thenReturn(initialHitCount + 1L);
-        when(deviceIdGenerator.newId(userAgent)).thenReturn(deviceId);
+        when(deviceProfileIdGenerator.newId(userAgent)).thenReturn(deviceId);
 
         // Act
         var device = service.matchDevice(ua);
@@ -139,10 +139,10 @@ public class DeviceProfileServiceTest {
         verify(repository, times(1)).findDeviceProfiles(userAgent);
         verify(repository, times(1)).persistDeviceProfile(any(DeviceProfile.class));
         verify(repository, times(1)).incrementHitCount(deviceId);
-        verify(deviceIdGenerator, times(1)).newId(userAgent);
+        verify(deviceProfileIdGenerator, times(1)).newId(userAgent);
         verifyNoMoreInteractions(repository);
         verifyNoMoreInteractions(userAgentParser);
-        verifyNoMoreInteractions(deviceIdGenerator);
+        verifyNoMoreInteractions(deviceProfileIdGenerator);
     }
 
     @Test
@@ -159,11 +159,9 @@ public class DeviceProfileServiceTest {
         var userAgent = new UserAgent(osName.toLowerCase(), osVersion, browserName.toLowerCase(), browserVersion);
         var deviceProfile = new DeviceProfile(deviceId, initialHitCount, osName, osVersion, browserName, browserVersion);
         when(userAgentParser.parse(ua)).thenReturn(userAgent);
-        // when(repository.findDeviceProfilesByOSName(osName.toLowerCase())).thenReturn(List.of(deviceProfile));
-        // findDeviceProfiles
         when(repository.findDeviceProfiles(userAgent)).thenReturn(List.of(deviceProfile));
         when(repository.incrementHitCount(deviceId)).thenReturn(initialHitCount + 1L);
-        when(deviceIdGenerator.newId(userAgent)).thenReturn(deviceId);
+        when(deviceProfileIdGenerator.newId(userAgent)).thenReturn(deviceId);
 
         // Act
         var device = service.matchDevice(ua);
@@ -180,10 +178,10 @@ public class DeviceProfileServiceTest {
         verify(repository, times(0)).persistDeviceProfile(any(DeviceProfile.class));
         verify(repository, times(1)).incrementHitCount(deviceId);
         verify(repository, times(1)).findDeviceProfiles(any(UserAgent.class));
-        verify(deviceIdGenerator, times(0)).newId(any(UserAgent.class));
+        verify(deviceProfileIdGenerator, times(0)).newId(any(UserAgent.class));
         verifyNoMoreInteractions(repository);
         verifyNoMoreInteractions(userAgentParser);
-        verifyNoMoreInteractions(deviceIdGenerator);
+        verifyNoMoreInteractions(deviceProfileIdGenerator);
     }
 
     @Test
