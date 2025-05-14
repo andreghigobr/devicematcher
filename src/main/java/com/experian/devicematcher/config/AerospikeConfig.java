@@ -38,6 +38,15 @@ public class AerospikeConfig {
     @Value("${aerospike.policy.timeout}")
     private Integer timeout;
 
+    @Value("${aerospike.config.create-indexes:false}")
+    private Boolean createIndexes;
+
+    @Value("${aerospike.config.index.osname}")
+    private String osNameIndex;
+
+    @Value("${aerospike.config.index.osname.bin}")
+    private String osNameIndexBin;
+
     @Bean
     public IAerospikeClient aerospikeClient(
         @Autowired @Qualifier("aerospikeDefaultPolicy") Policy aerospikeDefaultPolicy
@@ -45,7 +54,7 @@ public class AerospikeConfig {
         try {
             logger.info("Configuring Aerospike client | hostname={} port={}", hostname, port);
             var client = new AerospikeClient(hostname, port);
-            createIndex(client, namespace, setName);
+            if (createIndexes) createIndex(client, namespace, setName);
             return client;
         } catch (Exception ex) {
             logger.error("Error creating Aerospike client: {}", ex.getMessage(), ex);
@@ -54,9 +63,7 @@ public class AerospikeConfig {
     }
 
     private Map<String, String> binsByIndex() {
-        return Map.of(
-            "osname_idx", "osName"
-        );
+        return Map.of(osNameIndex, osNameIndexBin);
     }
 
     private void createIndex(AerospikeClient client, String namespace, String setName) {
