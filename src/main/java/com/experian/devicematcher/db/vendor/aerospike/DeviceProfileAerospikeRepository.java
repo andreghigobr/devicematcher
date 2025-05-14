@@ -10,6 +10,7 @@ import com.aerospike.client.query.Statement;
 import com.experian.devicematcher.domain.DeviceProfile;
 import com.experian.devicematcher.domain.UserAgent;
 import com.experian.devicematcher.repository.DeviceProfileRepository;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -39,8 +40,8 @@ public class DeviceProfileAerospikeRepository implements DeviceProfileRepository
 
     @Autowired
     public DeviceProfileAerospikeRepository(
-            IAerospikeClient client,
-            AerospikePolicies policies
+        IAerospikeClient client,
+        AerospikePolicies policies
     ) {
         this.client = client;
         this.policies = policies;
@@ -82,7 +83,7 @@ public class DeviceProfileAerospikeRepository implements DeviceProfileRepository
         );
 
         var devices = new ArrayList<DeviceProfile>();
-        try(RecordSet rs = client.query(policy, stmt)) {
+        try (RecordSet rs = client.query(policy, stmt)) {
             if (rs.next()) {
                 Record record = rs.getRecord();
                 var device = DeviceProfileBins.toEntity(record);
@@ -153,9 +154,9 @@ public class DeviceProfileAerospikeRepository implements DeviceProfileRepository
         var policy = policies.newWritePolicy();
         Key key = new Key(namespace, setName, deviceId);
         var record = client.operate(
-                policy, key,
-                Operation.add(new Bin(HIT_COUNT, 1L)),
-                Operation.get(HIT_COUNT)
+            policy, key,
+            Operation.add(new Bin(HIT_COUNT, 1L)),
+            Operation.get(HIT_COUNT)
         );
 
         var updatedHitCount = record.getLong(HIT_COUNT);

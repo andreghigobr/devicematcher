@@ -35,9 +35,9 @@ public class ApiErrorDTO {
     @Override
     public String toString() {
         return "ApiErrorDTO{" +
-                "status=" + status +
-                ", error='" + error + '\'' +
-                ", message='" + message + '\'' +
-                '}';
+            "status=" + status +
+            ", error='" + error + '\'' +
+            ", message='" + message + '\'' +
+            '}';
     }
 }

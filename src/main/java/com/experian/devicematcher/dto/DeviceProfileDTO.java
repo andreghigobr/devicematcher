@@ -26,12 +26,12 @@ public class DeviceProfileDTO {
 
     public static DeviceProfileDTO from(DeviceProfile deviceProfile) {
         return new DeviceProfileDTO(
-                deviceProfile.deviceId(),
-                deviceProfile.hitCount(),
-                deviceProfile.osName(),
-                deviceProfile.osVersion(),
-                deviceProfile.browserName(),
-                deviceProfile.browserVersion()
+            deviceProfile.deviceId(),
+            deviceProfile.hitCount(),
+            deviceProfile.osName(),
+            deviceProfile.osVersion(),
+            deviceProfile.browserName(),
+            deviceProfile.browserVersion()
         );
     }
 
@@ -71,12 +71,12 @@ public class DeviceProfileDTO {
     @Override
     public String toString() {
         return "DeviceProfileDTO{" +
-                "deviceId=" + deviceId +
-                ", hitCount=" + hitCount +
-                ", osName='" + osName + '\'' +
-                ", osVersion='" + osVersion + '\'' +
-                ", browserName='" + browserName + '\'' +
-                ", browserVersion='" + browserVersion + '\'' +
-                '}';
+            "deviceId=" + deviceId +
+            ", hitCount=" + hitCount +
+            ", osName='" + osName + '\'' +
+            ", osVersion='" + osVersion + '\'' +
+            ", browserName='" + browserName + '\'' +
+            ", browserVersion='" + browserVersion + '\'' +
+            '}';
     }
 }

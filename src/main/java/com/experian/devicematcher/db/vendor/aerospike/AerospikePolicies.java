@@ -15,9 +15,9 @@ public class AerospikePolicies {
 
     @Autowired
     public AerospikePolicies(
-        @Qualifier("aerospikeDefaultPolicy") Policy defaultPolicy,
-        @Qualifier("aerospikeQueryPolicy") QueryPolicy queryPolicy,
-        @Qualifier("aerospikeWritePolicy") WritePolicy writePolicy
+            @Qualifier("aerospikeDefaultPolicy") Policy defaultPolicy,
+            @Qualifier("aerospikeQueryPolicy") QueryPolicy queryPolicy,
+            @Qualifier("aerospikeWritePolicy") WritePolicy writePolicy
     ) {
         this.defaultPolicy = defaultPolicy;
         this.queryPolicy = queryPolicy;

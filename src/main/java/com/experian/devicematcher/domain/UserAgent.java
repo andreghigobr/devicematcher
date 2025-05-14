@@ -36,10 +36,10 @@ public class UserAgent {
     @Override
     public String toString() {
         return "UserAgent{" +
-                "osName='" + osName + '\'' +
-                ", osVersion='" + osVersion + '\'' +
-                ", browserName='" + browserName + '\'' +
-                ", browserVersion='" + browserVersion + '\'' +
-                '}';
+            "osName='" + osName + '\'' +
+            ", osVersion='" + osVersion + '\'' +
+            ", browserName='" + browserName + '\'' +
+            ", browserVersion='" + browserVersion + '\'' +
+            '}';
     }
 }

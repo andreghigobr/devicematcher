@@ -2,6 +2,7 @@ package com.experian.devicematcher.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+
 import ua_parser.Parser;
 
 @Configuration

@@ -25,7 +25,7 @@ public class DeviceProfileBins {
     }
 
     public static Bin[] toBins(DeviceProfile device) {
-        return new Bin[] {
+        return new Bin[]{
             new Bin(DEVICE_ID, device.deviceId()),
             new Bin(HIT_COUNT, device.hitCount()),
             new Bin(OS_NAME, device.osName()),

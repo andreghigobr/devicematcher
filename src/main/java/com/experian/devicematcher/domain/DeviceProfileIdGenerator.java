@@ -9,6 +9,7 @@ package com.experian.devicematcher.domain;
 public interface DeviceProfileIdGenerator {
     /**
      * Generates a unique device ID based on the provided user agent.
+     *
      * @param userAgent the user agent to base the ID on
      * @return a unique device ID as a string
      */

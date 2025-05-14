@@ -58,11 +58,11 @@ public class DeviceProfileServiceImpl implements DeviceProfileService {
             var userAgent = userAgentParser.parse(userAgentString);
 
             var device = repository.findDeviceProfiles(userAgent).stream()
-                .findFirst().orElseGet(() -> {
-                    var d = DeviceProfile.from(() -> deviceProfileIdGenerator.newId(userAgent), userAgent);
-                    repository.persistDeviceProfile(d);
-                    return d;
-                });
+                    .findFirst().orElseGet(() -> {
+                        var d = DeviceProfile.from(() -> deviceProfileIdGenerator.newId(userAgent), userAgent);
+                        repository.persistDeviceProfile(d);
+                        return d;
+                    });
 
             long hitCount = repository.incrementHitCount(device.deviceId());
             return device.withHitCount(hitCount);
@@ -95,7 +95,7 @@ public class DeviceProfileServiceImpl implements DeviceProfileService {
 
             repository.deleteDeviceProfileById(deviceId);
         } catch (Exception ex) {
-            logger.error("Error deleting device by ID: {}", ex.getMessage(),ex);
+            logger.error("Error deleting device by ID: {}", ex.getMessage(), ex);
             throw new DeviceProfileDeleteException(ex);
         }
     }

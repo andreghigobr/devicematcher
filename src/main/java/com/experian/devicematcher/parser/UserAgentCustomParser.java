@@ -2,11 +2,13 @@ package com.experian.devicematcher.parser;
 
 import com.experian.devicematcher.domain.UserAgent;
 import com.experian.devicematcher.exceptions.UserAgentParsingException;
+
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+
 import ua_parser.Client;
 import ua_parser.Parser;
 
