@@ -2,12 +2,14 @@ package com.experian.devicematcher.db.vendor.aerospike;
 
 import com.aerospike.client.*;
 import com.aerospike.client.Record;
+import com.aerospike.client.exp.Exp;
 import com.aerospike.client.policy.Policy;
 import com.aerospike.client.policy.QueryPolicy;
 import com.aerospike.client.policy.WritePolicy;
 import com.aerospike.client.query.RecordSet;
 import com.aerospike.client.query.Statement;
 import com.experian.devicematcher.domain.DeviceProfile;
+import com.experian.devicematcher.domain.UserAgent;
 import com.experian.devicematcher.repository.DeviceProfileRepository;
 import com.aerospike.client.query.Filter;
 import org.slf4j.Logger;
@@ -22,8 +24,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
-import static com.experian.devicematcher.db.vendor.aerospike.DeviceProfileBins.HIT_COUNT;
-import static com.experian.devicematcher.db.vendor.aerospike.DeviceProfileBins.OS_NAME;
+import static com.experian.devicematcher.db.vendor.aerospike.DeviceProfileBins.*;
 
 @Component
 public class DeviceProfileAerospikeRepository implements DeviceProfileRepository {
@@ -74,16 +75,54 @@ public class DeviceProfileAerospikeRepository implements DeviceProfileRepository
     }
 
     @Override
+    public List<DeviceProfile> findDevices(UserAgent userAgent) {
+        logger.info("Retrieving devices by User-Agent from Aerospike | userAgent={}", userAgent);
+
+        var stmt = new Statement();
+        stmt.setNamespace(namespace);
+        stmt.setSetName(setName);
+        var policy = new QueryPolicy(client.getQueryPolicyDefault());
+
+        policy.filterExp = Exp.build(
+            Exp.and(
+                Exp.eq(Exp.stringBin(OS_NAME), Exp.val(userAgent.getOsName().toLowerCase())),
+                Exp.eq(Exp.stringBin(OS_VERSION), Exp.val(userAgent.getOsVersion())),
+                Exp.eq(Exp.stringBin(BROWSER_NAME), Exp.val(userAgent.getBrowserName().toLowerCase())),
+                Exp.eq(Exp.stringBin(BROWSER_VERSION), Exp.val(userAgent.getBrowserVersion()))
+            )
+        );
+
+        var devices = new ArrayList<DeviceProfile>();
+        try(RecordSet rs = client.query(policy, stmt)) {
+            if (rs.next()) {
+                Record record = rs.getRecord();
+                var device = DeviceProfileBins.from(record);
+                devices.add(device);
+            }
+        } catch (Exception ex) {
+            logger.error("Error retrieving devices by UserAgent from Aerospike | userAgent={} error={}", userAgent, ex.getMessage());
+            throw ex;
+        }
+
+        logger.debug("Devices found | total={} userAgent={}", devices.size(), userAgent);
+        return Collections.unmodifiableList(devices);
+    }
+
+    @Override
     public List<DeviceProfile> findDevicesByOSName(String osName) {
         logger.info("Retrieving devices by OS from Aerospike | osName={}", osName);
 
-        Statement statement = new Statement();
-        statement.setNamespace(namespace);
-        statement.setSetName(setName);
-        statement.setFilter(Filter.equal(OS_NAME, osName));
+        var stmt = new Statement();
+        stmt.setNamespace(namespace);
+        stmt.setSetName(setName);
+
+        var policy = new QueryPolicy(queryPolicy);
+        policy.filterExp = Exp.build(
+            Exp.eq(Exp.stringBin(OS_NAME), Exp.val(osName.toLowerCase()))
+        );
 
         List<DeviceProfile> devices = new ArrayList<>();
-        try (RecordSet recordSet = client.query(queryPolicy, statement)) {
+        try (RecordSet recordSet = client.query(policy, stmt)) {
             while (recordSet.next()) {
                 Record record = recordSet.getRecord();
                 var device = DeviceProfileBins.from(record);
@@ -102,7 +141,8 @@ public class DeviceProfileAerospikeRepository implements DeviceProfileRepository
     public void deleteDeviceById(String deviceId) {
         logger.info("Deleting device by ID from Aerospike | deviceId={}", deviceId);
         Key key = new Key(namespace, setName, deviceId);
-        boolean isDeleted = client.delete(writePolicy, key);
+        var policy = new WritePolicy(writePolicy);
+        boolean isDeleted = client.delete(policy, key);
 
         if (isDeleted) {
             logger.debug("Device deleted successfully on Aerospike | deviceId={}", deviceId);
@@ -115,7 +155,8 @@ public class DeviceProfileAerospikeRepository implements DeviceProfileRepository
     public void persistDevice(DeviceProfile device) {
         logger.info("Persisting device profile into Aerospike | device={}", device);
         Key key = new Key(namespace, setName, device.getDeviceId());
-        client.put(writePolicy, key, DeviceProfileBins.toBins(device));
+        var policy = new WritePolicy(writePolicy);
+        client.put(policy, key, DeviceProfileBins.toBins(device));
         logger.debug("Device device profile persisted into Aerospike | device={}", device);
     }
 
@@ -123,9 +164,10 @@ public class DeviceProfileAerospikeRepository implements DeviceProfileRepository
     public long incrementHitCount(String deviceId) {
         logger.info("Incrementing device hit count on Aerospike | deviceId={}", deviceId);
 
+        var policy = new WritePolicy(writePolicy);
         Key key = new Key(namespace, setName, deviceId);
         var record = client.operate(
-                writePolicy, key,
+                policy, key,
                 Operation.add(new Bin(HIT_COUNT, 1L)),
                 Operation.get(HIT_COUNT)
         );

@@ -1,6 +1,7 @@
 package com.experian.devicematcher.repository;
 
 import com.experian.devicematcher.domain.DeviceProfile;
+import com.experian.devicematcher.domain.UserAgent;
 
 import java.util.List;
 import java.util.Optional;
@@ -18,6 +19,14 @@ public interface DeviceProfileRepository {
      * @return An Optional containing the device profile if found, or an empty Optional if not found.
      */
     Optional<DeviceProfile> findDeviceById(String deviceId);
+
+    /**
+     * Finds all device profiles that match the given user agent.
+     * This method returns a list of device profiles that match the user agent.
+     * @param userAgent The user agent to match.
+     * @return A list of device profiles that match the user agent.
+     */
+    List<DeviceProfile> findDevices(UserAgent userAgent);
 
     /**
      * Finds all device profiles that match the given OS name.

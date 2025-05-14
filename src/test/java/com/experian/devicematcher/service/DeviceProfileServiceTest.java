@@ -73,7 +73,7 @@ public class DeviceProfileServiceTest {
     }
 
     @Test
-    public void getDeviceById_WhenExistingId_ThenReturnDevice() throws DeviceProfileNotFoundException {
+    public void getDeviceById_WhenExistingId_ThenReturnDevice() throws Exception {
         // Arrange
         String deviceId = UUID.randomUUID().toString();
         DeviceProfile device = new DeviceProfile(deviceId, 0L, "Windows", "10", "Chrome", "90");
@@ -204,7 +204,7 @@ public class DeviceProfileServiceTest {
     }
 
     @Test
-    public void getDevicesByOS_WhenValidOSName_NotExists_ShouldReturnEmptyList() throws DeviceProfileNotFoundException {
+    public void getDevicesByOS_WhenValidOSName_NotExists_ShouldReturnEmptyList() throws Exception {
         String osName = "alternative OS";
         when(repository.findDevicesByOSName(osName)).thenReturn(List.of());
 
@@ -216,7 +216,7 @@ public class DeviceProfileServiceTest {
     }
 
     @Test
-    public void getDevicesByOS_WhenValidOSName_Exists_ShouldReturnList() throws DeviceProfileNotFoundException {
+    public void getDevicesByOS_WhenValidOSName_Exists_ShouldReturnList() throws Exception {
         String osName = "windows";
         var device = new DeviceProfile("deviceId", 0L, osName, "10", "Chrome", "90");
         when(repository.findDevicesByOSName(osName)).thenReturn(List.of(device));

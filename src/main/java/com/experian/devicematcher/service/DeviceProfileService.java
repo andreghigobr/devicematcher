@@ -2,6 +2,7 @@ package com.experian.devicematcher.service;
 
 import com.experian.devicematcher.domain.DeviceIdGenerator;
 import com.experian.devicematcher.domain.DeviceProfile;
+import com.experian.devicematcher.exceptions.DeviceProfileDeleteException;
 import com.experian.devicematcher.exceptions.DeviceProfileException;
 import com.experian.devicematcher.exceptions.DeviceProfileMatchException;
 import com.experian.devicematcher.exceptions.DeviceProfileNotFoundException;
@@ -18,7 +19,7 @@ import java.util.Optional;
 import static java.util.Objects.requireNonNull;
 
 @Service
-public class DeviceProfileService {
+public class DeviceProfileService implements IDeviceProfileService {
     private static final Logger logger = LoggerFactory.getLogger(DeviceProfileService.class);
 
     private final DeviceIdGenerator deviceIdGenerator;
@@ -32,7 +33,7 @@ public class DeviceProfileService {
         this.repository = repository;
     }
 
-    public Optional<DeviceProfile> getDeviceById(String deviceId) throws DeviceProfileNotFoundException {
+    public Optional<DeviceProfile> getDeviceById(String deviceId) throws DeviceProfileException {
         try {
             logger.info("Getting Device By ID | deviceId={}", deviceId);
 
@@ -42,11 +43,11 @@ public class DeviceProfileService {
             return repository.findDeviceById(deviceId);
         } catch (Exception ex) {
             logger.error("Error getting device by ID: {}", ex.getMessage(), ex);
-            throw new DeviceProfileNotFoundException(ex);
+            throw new DeviceProfileException(ex);
         }
     }
 
-    public DeviceProfile matchDevice(String userAgentString) throws DeviceProfileMatchException {
+    public DeviceProfile matchDevice(String userAgentString) throws DeviceProfileException {
         try {
             logger.info("Matching Device by User-Agent | userAgent={}", userAgentString);
 
@@ -54,8 +55,7 @@ public class DeviceProfileService {
             if (userAgentString.isBlank()) throw new IllegalArgumentException("User-Agent cannot be blank");
 
             var userAgent = userAgentParser.parse(userAgentString);
-            var device = repository.findDevicesByOSName(userAgent.getOsName().toLowerCase()).stream()
-                .filter(d -> d.match(userAgent))
+            var device = repository.findDevices(userAgent).stream()
                 .findFirst().orElseGet(() -> {
                     var d = DeviceProfile.from(deviceIdGenerator::generateId, userAgent);
                     repository.persistDevice(d);
@@ -70,7 +70,7 @@ public class DeviceProfileService {
         }
     }
 
-    public List<DeviceProfile> getDevicesByOS(String osName) throws DeviceProfileNotFoundException {
+    public List<DeviceProfile> getDevicesByOS(String osName) throws DeviceProfileException {
         try {
             logger.info("Getting Device By OS name | osName={}", osName.toLowerCase());
             requireNonNull(osName, "OS Name cannot be null");
@@ -79,7 +79,7 @@ public class DeviceProfileService {
             return repository.findDevicesByOSName(osName.toLowerCase());
         } catch (Exception ex) {
             logger.error("Error getting devices by OS name: {}", ex.getMessage(), ex);
-            throw new DeviceProfileNotFoundException(ex);
+            throw new DeviceProfileException(ex);
         }
     }
 
@@ -92,7 +92,7 @@ public class DeviceProfileService {
             repository.deleteDeviceById(deviceId);
         } catch (Exception ex) {
             logger.error("Error deleting device by ID: {}", ex.getMessage(),ex);
-            throw new DeviceProfileException(ex);
+            throw new DeviceProfileDeleteException(ex);
         }
     }
 }
