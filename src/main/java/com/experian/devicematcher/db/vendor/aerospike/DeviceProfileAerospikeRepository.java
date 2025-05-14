@@ -3,19 +3,15 @@ package com.experian.devicematcher.db.vendor.aerospike;
 import com.aerospike.client.*;
 import com.aerospike.client.Record;
 import com.aerospike.client.exp.Exp;
-import com.aerospike.client.policy.Policy;
 import com.aerospike.client.policy.QueryPolicy;
-import com.aerospike.client.policy.WritePolicy;
 import com.aerospike.client.query.RecordSet;
 import com.aerospike.client.query.Statement;
 import com.experian.devicematcher.domain.DeviceProfile;
 import com.experian.devicematcher.domain.UserAgent;
 import com.experian.devicematcher.repository.DeviceProfileRepository;
-import com.aerospike.client.query.Filter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
@@ -36,46 +32,38 @@ public class DeviceProfileAerospikeRepository implements DeviceProfileRepository
     @Value("${aerospike.set}")
     private String setName;
 
-    private final Policy defaultPolicy;
-
-    private final WritePolicy writePolicy;
-
-    private final QueryPolicy queryPolicy;
-
     private final IAerospikeClient client;
+
+    private final AerospikePolicies policies;
 
     @Autowired
     public DeviceProfileAerospikeRepository(
             IAerospikeClient client,
-            @Qualifier("aerospikeDefaultPolicy") Policy policy,
-            @Qualifier("aerospikeWritePolicy") WritePolicy writePolicy,
-            @Qualifier("aerospikeQueryPolicy") QueryPolicy queryPolicy
+            AerospikePolicies policies
     ) {
         this.client = client;
-        this.defaultPolicy = policy;
-        this.writePolicy = writePolicy;
-        this.queryPolicy = queryPolicy;
+        this.policies = policies;
     }
 
     @Override
-    public Optional<DeviceProfile> findDeviceById(String deviceId) {
+    public Optional<DeviceProfile> findDeviceProfileById(String deviceId) {
         logger.info("Retrieving device by ID from Aerospike | deviceId={}", deviceId);
 
         Key key = new Key(namespace, setName, deviceId);
-        Record record = client.get(defaultPolicy, key);
+        Record record = client.get(policies.newDefaultPolicy(), key);
 
         if (record == null) {
             logger.debug("Device not found | deviceId={}", deviceId);
             return Optional.empty();
         }
 
-        var device = DeviceProfileBins.from(record);
+        var device = DeviceProfileBins.toEntity(record);
         logger.debug("Device by id {} found | device={}", deviceId, device);
         return Optional.of(device);
     }
 
     @Override
-    public List<DeviceProfile> findDevices(UserAgent userAgent) {
+    public List<DeviceProfile> findDeviceProfiles(UserAgent userAgent) {
         logger.info("Retrieving devices by User-Agent from Aerospike | userAgent={}", userAgent);
 
         var stmt = new Statement();
@@ -96,11 +84,11 @@ public class DeviceProfileAerospikeRepository implements DeviceProfileRepository
         try(RecordSet rs = client.query(policy, stmt)) {
             if (rs.next()) {
                 Record record = rs.getRecord();
-                var device = DeviceProfileBins.from(record);
+                var device = DeviceProfileBins.toEntity(record);
                 devices.add(device);
             }
         } catch (Exception ex) {
-            logger.error("Error retrieving devices by UserAgent from Aerospike | userAgent={} error={}", userAgent, ex.getMessage());
+            logger.error("Error retrieving device profiles by UserAgent from Aerospike | userAgent={} error={}", userAgent, ex.getMessage());
             throw ex;
         }
 
@@ -109,14 +97,14 @@ public class DeviceProfileAerospikeRepository implements DeviceProfileRepository
     }
 
     @Override
-    public List<DeviceProfile> findDevicesByOSName(String osName) {
+    public List<DeviceProfile> findDeviceProfilesByOSName(String osName) {
         logger.info("Retrieving devices by OS from Aerospike | osName={}", osName);
 
         var stmt = new Statement();
         stmt.setNamespace(namespace);
         stmt.setSetName(setName);
 
-        var policy = new QueryPolicy(queryPolicy);
+        var policy = policies.newQueryPolicy();
         policy.filterExp = Exp.build(
             Exp.eq(Exp.stringBin(OS_NAME), Exp.val(osName.toLowerCase()))
         );
@@ -125,7 +113,7 @@ public class DeviceProfileAerospikeRepository implements DeviceProfileRepository
         try (RecordSet recordSet = client.query(policy, stmt)) {
             while (recordSet.next()) {
                 Record record = recordSet.getRecord();
-                var device = DeviceProfileBins.from(record);
+                var device = DeviceProfileBins.toEntity(record);
                 devices.add(device);
             }
         } catch (Exception ex) {
@@ -138,10 +126,10 @@ public class DeviceProfileAerospikeRepository implements DeviceProfileRepository
     }
 
     @Override
-    public void deleteDeviceById(String deviceId) {
+    public void deleteDeviceProfileById(String deviceId) {
         logger.info("Deleting device by ID from Aerospike | deviceId={}", deviceId);
         Key key = new Key(namespace, setName, deviceId);
-        var policy = new WritePolicy(writePolicy);
+        var policy = policies.newWritePolicy();
         boolean isDeleted = client.delete(policy, key);
 
         if (isDeleted) {
@@ -152,10 +140,10 @@ public class DeviceProfileAerospikeRepository implements DeviceProfileRepository
     }
 
     @Override
-    public void persistDevice(DeviceProfile device) {
+    public void persistDeviceProfile(DeviceProfile device) {
         logger.info("Persisting device profile into Aerospike | device={}", device);
         Key key = new Key(namespace, setName, device.getDeviceId());
-        var policy = new WritePolicy(writePolicy);
+        var policy = policies.newWritePolicy();
         client.put(policy, key, DeviceProfileBins.toBins(device));
         logger.debug("Device device profile persisted into Aerospike | device={}", device);
     }
@@ -164,7 +152,7 @@ public class DeviceProfileAerospikeRepository implements DeviceProfileRepository
     public long incrementHitCount(String deviceId) {
         logger.info("Incrementing device hit count on Aerospike | deviceId={}", deviceId);
 
-        var policy = new WritePolicy(writePolicy);
+        var policy = policies.newWritePolicy();
         Key key = new Key(namespace, setName, deviceId);
         var record = client.operate(
                 policy, key,

@@ -3,6 +3,7 @@ package com.experian.devicematcher.controller;
 import com.experian.devicematcher.dto.DeviceProfileDTO;
 import com.experian.devicematcher.dto.DeviceProfilesDTO;
 import com.experian.devicematcher.service.DeviceProfileService;
+import com.experian.devicematcher.service.IDeviceProfileService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -22,7 +23,7 @@ import org.springframework.web.bind.annotation.*;
 public class DeviceProfileController {
     private static final Logger logger = LoggerFactory.getLogger(DeviceProfileController.class);
 
-    private DeviceProfileService service;
+    private final IDeviceProfileService service;
 
     @Autowired
     public DeviceProfileController(DeviceProfileService service) {

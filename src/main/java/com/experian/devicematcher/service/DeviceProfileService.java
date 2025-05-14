@@ -5,7 +5,6 @@ import com.experian.devicematcher.domain.DeviceProfile;
 import com.experian.devicematcher.exceptions.DeviceProfileDeleteException;
 import com.experian.devicematcher.exceptions.DeviceProfileException;
 import com.experian.devicematcher.exceptions.DeviceProfileMatchException;
-import com.experian.devicematcher.exceptions.DeviceProfileNotFoundException;
 import com.experian.devicematcher.parser.UserAgentParser;
 import com.experian.devicematcher.repository.DeviceProfileRepository;
 import org.slf4j.Logger;
@@ -40,7 +39,7 @@ public class DeviceProfileService implements IDeviceProfileService {
             requireNonNull(deviceId, "Device ID cannot be null");
             if (deviceId.isBlank()) throw new IllegalArgumentException("Device ID cannot be blank");
 
-            return repository.findDeviceById(deviceId);
+            return repository.findDeviceProfileById(deviceId);
         } catch (Exception ex) {
             logger.error("Error getting device by ID: {}", ex.getMessage(), ex);
             throw new DeviceProfileException(ex);
@@ -55,10 +54,11 @@ public class DeviceProfileService implements IDeviceProfileService {
             if (userAgentString.isBlank()) throw new IllegalArgumentException("User-Agent cannot be blank");
 
             var userAgent = userAgentParser.parse(userAgentString);
-            var device = repository.findDevices(userAgent).stream()
+
+            var device = repository.findDeviceProfiles(userAgent).stream()
                 .findFirst().orElseGet(() -> {
                     var d = DeviceProfile.from(deviceIdGenerator::generateId, userAgent);
-                    repository.persistDevice(d);
+                    repository.persistDeviceProfile(d);
                     return d;
                 });
 
@@ -76,7 +76,7 @@ public class DeviceProfileService implements IDeviceProfileService {
             requireNonNull(osName, "OS Name cannot be null");
             if (osName.isBlank()) throw new IllegalArgumentException("OS Name cannot be blank");
 
-            return repository.findDevicesByOSName(osName.toLowerCase());
+            return repository.findDeviceProfilesByOSName(osName.toLowerCase());
         } catch (Exception ex) {
             logger.error("Error getting devices by OS name: {}", ex.getMessage(), ex);
             throw new DeviceProfileException(ex);
@@ -89,7 +89,7 @@ public class DeviceProfileService implements IDeviceProfileService {
             requireNonNull(deviceId, "Device ID cannot be null");
             if (deviceId.isBlank()) throw new IllegalArgumentException("Device ID cannot be blank");
 
-            repository.deleteDeviceById(deviceId);
+            repository.deleteDeviceProfileById(deviceId);
         } catch (Exception ex) {
             logger.error("Error deleting device by ID: {}", ex.getMessage(),ex);
             throw new DeviceProfileDeleteException(ex);

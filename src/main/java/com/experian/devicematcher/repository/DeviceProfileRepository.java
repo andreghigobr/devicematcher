@@ -18,7 +18,7 @@ public interface DeviceProfileRepository {
      * @param deviceId The ID of the device to be found.
      * @return An Optional containing the device profile if found, or an empty Optional if not found.
      */
-    Optional<DeviceProfile> findDeviceById(String deviceId);
+    Optional<DeviceProfile> findDeviceProfileById(String deviceId);
 
     /**
      * Finds all device profiles that match the given user agent.
@@ -26,7 +26,7 @@ public interface DeviceProfileRepository {
      * @param userAgent The user agent to match.
      * @return A list of device profiles that match the user agent.
      */
-    List<DeviceProfile> findDevices(UserAgent userAgent);
+    List<DeviceProfile> findDeviceProfiles(UserAgent userAgent);
 
     /**
      * Finds all device profiles that match the given OS name.
@@ -34,20 +34,20 @@ public interface DeviceProfileRepository {
      * @param osName The OS name to match.
      * @return A list of device profiles that match the OS name.
      */
-    List<DeviceProfile> findDevicesByOSName(String osName);
+    List<DeviceProfile> findDeviceProfilesByOSName(String osName);
 
     /**
      * Finds a device profile by its ID.
      * @param deviceId  The ID of the device to be found.
      */
-    void deleteDeviceById(String deviceId);
+    void deleteDeviceProfileById(String deviceId);
 
     /**
      * Persists a device profile.
      * This method is used to save a new device profile or update an existing one.
      * @param device The device profile to be persisted.
      */
-    void persistDevice(DeviceProfile device);
+    void persistDeviceProfile(DeviceProfile device);
 
     /**
      * Increments the hit count for a device profile.

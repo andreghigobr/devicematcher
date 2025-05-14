@@ -12,7 +12,7 @@ public class DeviceProfileBins {
     static final String BROWSER_NAME = "browserName";
     static final String BROWSER_VERSION = "browserVersion";
 
-    public static DeviceProfile from(Record record) {
+    public static DeviceProfile toEntity(Record record) {
         if (record == null) return null;
         return new DeviceProfile(
             record.getString(DEVICE_ID),
