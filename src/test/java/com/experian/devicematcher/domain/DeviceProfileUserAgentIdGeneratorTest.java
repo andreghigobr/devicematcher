@@ -7,7 +7,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @Tag("unit")
 public class DeviceProfileUserAgentIdGeneratorTest {
-    private final DeviceProfileIdGenerator idGenerator = new DeviceProfileUserAgentProfileIdGenerator();
+    private final DeviceProfileIdGenerator idGenerator = new DeviceProfileUserAgentIdGenerator();
 
     @Test
     public void deviceProfileId_withIphoneUserAgent() {
