@@ -112,3 +112,12 @@ docker run -d --name devicematcher \
   --network=host \
   devicematcher:latest
 ```
+
+### Makefile
+
+A Makefile is provided for convenience. You can use it to run common tasks:
+
+```bash
+make all
+```
+This will run all tests, build the application, and start the server.
