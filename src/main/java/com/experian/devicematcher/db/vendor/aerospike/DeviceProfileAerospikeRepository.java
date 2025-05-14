@@ -71,7 +71,7 @@ public class DeviceProfileAerospikeRepository implements DeviceProfileRepository
         var stmt = new Statement();
         stmt.setNamespace(namespace);
         stmt.setSetName(setName);
-        var policy = new QueryPolicy(client.getQueryPolicyDefault());
+        var policy = new QueryPolicy(policies.newDefaultPolicy());
 
         policy.filterExp = Exp.build(
             Exp.and(
