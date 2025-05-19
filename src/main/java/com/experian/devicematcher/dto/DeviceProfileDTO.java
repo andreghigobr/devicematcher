@@ -28,10 +28,10 @@ public record DeviceProfileDTO(
         return new DeviceProfileDTO(
             deviceProfile.deviceId(),
             deviceProfile.hitCount(),
-            deviceProfile.osName(),
-            deviceProfile.osVersion(),
-            deviceProfile.browserName(),
-            deviceProfile.browserVersion()
+            deviceProfile.userAgent().osName(),
+            deviceProfile.userAgent().osVersion(),
+            deviceProfile.userAgent().browserName(),
+            deviceProfile.userAgent().browserVersion()
         );
     }
 }

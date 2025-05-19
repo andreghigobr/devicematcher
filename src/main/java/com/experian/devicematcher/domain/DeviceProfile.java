@@ -5,19 +5,13 @@ import java.util.function.Supplier;
 public record DeviceProfile(
     String deviceId,
     Long hitCount,
-    String osName,
-    String osVersion,
-    String browserName,
-    String browserVersion
+    UserAgent userAgent
 ) {
     public static DeviceProfile from(Supplier<String> idSupplier, UserAgent userAgent) {
         return new DeviceProfile(
             idSupplier.get(),
             0L,
-            userAgent.osName().toLowerCase(),
-            userAgent.osVersion(),
-            userAgent.browserName().toLowerCase(),
-            userAgent.browserVersion()
+            userAgent
         );
     }
 
@@ -25,18 +19,15 @@ public record DeviceProfile(
         return new DeviceProfile(
             deviceId,
             updatedHitCount,
-            osName,
-            osVersion,
-            browserName,
-            browserVersion
+            userAgent
         );
     }
 
     public boolean match(UserAgent userAgent) {
-        return this.osName.equalsIgnoreCase(userAgent.osName()) &&
-            this.osVersion.equalsIgnoreCase(userAgent.osVersion()) &&
-            this.browserName.equalsIgnoreCase(userAgent.browserName()) &&
-            this.browserVersion.equalsIgnoreCase(userAgent.browserVersion());
+        return this.userAgent.osName().equalsIgnoreCase(userAgent.osName()) &&
+            this.userAgent.osVersion().equalsIgnoreCase(userAgent.osVersion()) &&
+            this.userAgent.browserName().equalsIgnoreCase(userAgent.browserName()) &&
+            this.userAgent.browserVersion().equalsIgnoreCase(userAgent.browserVersion());
     }
 
     @Override

@@ -25,10 +25,10 @@ public class DeviceProfileTest {
         var device = DeviceProfile.from(idSupplier, userAgent);
 
         assertEquals(idSupplier.get(), device.deviceId());
-        assertEquals(userAgent.osName(), device.osName());
-        assertEquals(userAgent.osVersion(), device.osVersion());
-        assertEquals(userAgent.browserName(), device.browserName());
-        assertEquals(userAgent.browserVersion(), device.browserVersion());
+        assertEquals(userAgent.osName(), device.userAgent().osName());
+        assertEquals(userAgent.osVersion(), device.userAgent().osVersion());
+        assertEquals(userAgent.browserName(), device.userAgent().browserName());
+        assertEquals(userAgent.browserVersion(), device.userAgent().browserVersion());
     }
 
     @Test
@@ -47,7 +47,7 @@ public class DeviceProfileTest {
     public void match_whenUserAgentDoesNotMatchDevice() throws Exception {
         var userAgentString = "Mozilla/5.0 (iPhone; CPU iPhone OS 16_0 like Mac OS X) AppleWebKit/537.36 (KHTML, like Gecko) CriOS/116.0.5845.110 Mobile/15E148 Safari/604.1";
         var userAgent = userAgentParser.parse(userAgentString);
-        var device = new DeviceProfile("1", 0L, "android", "12.0.0", "chrome mobile", "116.0.5845");
+        var device = new DeviceProfile("1", 0L, new UserAgent("android", "12.0.0", "chrome mobile", "116.0.5845"));
 
         assertFalse(device.match(userAgent));
     }
