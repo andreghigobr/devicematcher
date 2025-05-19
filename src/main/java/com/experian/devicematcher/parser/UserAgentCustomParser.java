@@ -30,7 +30,7 @@ public class UserAgentCustomParser implements UserAgentParser {
 
             Client client = uaParser.parse(userAgentString);
 
-            return UserAgent.create(
+            return new UserAgent(
                 parseOSName(client).toLowerCase(),
                 parseOSVersion(client),
                 parseBrowserName(client).toLowerCase(),

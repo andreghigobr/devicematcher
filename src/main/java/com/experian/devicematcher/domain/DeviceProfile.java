@@ -14,10 +14,10 @@ public record DeviceProfile(
         return new DeviceProfile(
             idSupplier.get(),
             0L,
-            userAgent.getOsName().toLowerCase(),
-            userAgent.getOsVersion(),
-            userAgent.getBrowserName().toLowerCase(),
-            userAgent.getBrowserVersion()
+            userAgent.osName().toLowerCase(),
+            userAgent.osVersion(),
+            userAgent.browserName().toLowerCase(),
+            userAgent.browserVersion()
         );
     }
 
@@ -33,10 +33,10 @@ public record DeviceProfile(
     }
 
     public boolean match(UserAgent userAgent) {
-        return this.osName.equalsIgnoreCase(userAgent.getOsName()) &&
-            this.osVersion.equalsIgnoreCase(userAgent.getOsVersion()) &&
-            this.browserName.equalsIgnoreCase(userAgent.getBrowserName()) &&
-            this.browserVersion.equalsIgnoreCase(userAgent.getBrowserVersion());
+        return this.osName.equalsIgnoreCase(userAgent.osName()) &&
+            this.osVersion.equalsIgnoreCase(userAgent.osVersion()) &&
+            this.browserName.equalsIgnoreCase(userAgent.browserName()) &&
+            this.browserVersion.equalsIgnoreCase(userAgent.browserVersion());
     }
 
     @Override
@@ -44,24 +44,11 @@ public record DeviceProfile(
         if (this == obj) return true;
         if (obj == null || getClass() != obj.getClass()) return false;
         DeviceProfile that = (DeviceProfile) obj;
-
         return deviceId.equals(that.deviceId);
     }
 
     @Override
     public int hashCode() {
         return deviceId.hashCode();
-    }
-
-    @Override
-    public String toString() {
-        return "DeviceProfile{" +
-            "deviceId='" + deviceId + '\'' +
-            ", hitCount=" + hitCount +
-            ", osName='" + osName + '\'' +
-            ", osVersion='" + osVersion + '\'' +
-            ", browserName='" + browserName + '\'' +
-            ", browserVersion='" + browserVersion + '\'' +
-            '}';
     }
 }

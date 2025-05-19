@@ -25,10 +25,10 @@ public class DeviceProfileTest {
         var device = DeviceProfile.from(idSupplier, userAgent);
 
         assertEquals(idSupplier.get(), device.deviceId());
-        assertEquals(userAgent.getOsName(), device.osName());
-        assertEquals(userAgent.getOsVersion(), device.osVersion());
-        assertEquals(userAgent.getBrowserName(), device.browserName());
-        assertEquals(userAgent.getBrowserVersion(), device.browserVersion());
+        assertEquals(userAgent.osName(), device.osName());
+        assertEquals(userAgent.osVersion(), device.osVersion());
+        assertEquals(userAgent.browserName(), device.browserName());
+        assertEquals(userAgent.browserVersion(), device.browserVersion());
     }
 
     @Test

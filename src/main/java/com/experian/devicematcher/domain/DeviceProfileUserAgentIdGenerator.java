@@ -8,7 +8,7 @@ import java.util.UUID;
 public class DeviceProfileUserAgentIdGenerator implements DeviceProfileIdGenerator {
     @Override
     public String newId(UserAgent userAgent) {
-        var prefix = userAgent.getOsName().replaceAll("[^a-zA-Z0-9]", "").toLowerCase();
+        var prefix = userAgent.osName().replaceAll("[^a-zA-Z0-9]", "").toLowerCase();
         return prefix + "-" + UUID.randomUUID();
     }
 }

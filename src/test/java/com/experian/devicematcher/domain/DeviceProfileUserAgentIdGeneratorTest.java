@@ -11,7 +11,7 @@ public class DeviceProfileUserAgentIdGeneratorTest {
 
     @Test
     public void deviceProfileId_withIphoneUserAgent() {
-        var userAgent = UserAgent.create("iPhone", "15.0", "Safari", "15.0");
+        var userAgent = new UserAgent("iPhone", "15.0", "Safari", "15.0");
 
         var deviceId = idGenerator.newId(userAgent);
 

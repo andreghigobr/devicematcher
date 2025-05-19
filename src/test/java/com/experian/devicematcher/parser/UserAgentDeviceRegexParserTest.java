@@ -48,10 +48,10 @@ public class UserAgentDeviceRegexParserTest {
         // Act
         var ua = parser.parse(userAgent);
 
-        var actualOsName = ua.getOsName().toLowerCase();
-        var actualOsVersion = ua.getOsVersion();
-        var actualBrowserName = ua.getBrowserName();
-        var actualBrowserVersion = ua.getBrowserVersion();
+        var actualOsName = ua.osName().toLowerCase();
+        var actualOsVersion = ua.osVersion();
+        var actualBrowserName = ua.browserName();
+        var actualBrowserVersion = ua.browserVersion();
 
         // Assert
         assertEquals(expectedOsName, actualOsName, "OS Name should be " + expectedOsName);

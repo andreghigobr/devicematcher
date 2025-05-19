@@ -76,10 +76,10 @@ public class DeviceProfileAerospikeRepository implements DeviceProfileRepository
 
         policy.filterExp = Exp.build(
             Exp.and(
-                Exp.eq(Exp.stringBin(OS_NAME), Exp.val(userAgent.getOsName().toLowerCase())),
-                Exp.eq(Exp.stringBin(OS_VERSION), Exp.val(userAgent.getOsVersion())),
-                Exp.eq(Exp.stringBin(BROWSER_NAME), Exp.val(userAgent.getBrowserName().toLowerCase())),
-                Exp.eq(Exp.stringBin(BROWSER_VERSION), Exp.val(userAgent.getBrowserVersion()))
+                Exp.eq(Exp.stringBin(OS_NAME), Exp.val(userAgent.osName().toLowerCase())),
+                Exp.eq(Exp.stringBin(OS_VERSION), Exp.val(userAgent.osVersion())),
+                Exp.eq(Exp.stringBin(BROWSER_NAME), Exp.val(userAgent.browserName().toLowerCase())),
+                Exp.eq(Exp.stringBin(BROWSER_VERSION), Exp.val(userAgent.browserVersion()))
             )
         );
 

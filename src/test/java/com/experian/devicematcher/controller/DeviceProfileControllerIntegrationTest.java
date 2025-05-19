@@ -110,11 +110,11 @@ public class DeviceProfileControllerIntegrationTest {
         ResponseEntity<DeviceProfileDTO> response = matchDevice("Invalid User-Agent String");
         assertEquals(HttpStatus.OK, response.getStatusCode());
 
-        var device = getDeviceById(response.getBody().getDeviceId()).getBody();
-        assertEquals("unknown", device.getOsName());
-        assertEquals("", device.getOsVersion());
-        assertEquals("unknown", device.getBrowserName());
-        assertEquals("", device.getBrowserVersion());
+        var device = getDeviceById(response.getBody().deviceId()).getBody();
+        assertEquals("unknown", device.osName());
+        assertEquals("", device.osVersion());
+        assertEquals("unknown", device.browserName());
+        assertEquals("", device.browserVersion());
     }
 
     @Test
@@ -129,12 +129,12 @@ public class DeviceProfileControllerIntegrationTest {
         // Assert
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertNotNull(response.getBody());
-        assertNotNull(response.getBody().getDeviceId());
-        assertEquals(1L, response.getBody().getHitCount()); // new device first hit count
-        assertEquals(userAgent.getOsName(), response.getBody().getOsName());
-        assertEquals(userAgent.getOsVersion(), response.getBody().getOsVersion());
-        assertEquals(userAgent.getBrowserName(), response.getBody().getBrowserName());
-        assertEquals(userAgent.getBrowserVersion(), response.getBody().getBrowserVersion());
+        assertNotNull(response.getBody().deviceId());
+        assertEquals(1L, response.getBody().hitCount()); // new device first hit count
+        assertEquals(userAgent.osName(), response.getBody().osName());
+        assertEquals(userAgent.osVersion(), response.getBody().osVersion());
+        assertEquals(userAgent.browserName(), response.getBody().browserName());
+        assertEquals(userAgent.browserVersion(), response.getBody().browserVersion());
     }
 
     @Test
@@ -152,12 +152,12 @@ public class DeviceProfileControllerIntegrationTest {
         // Assert
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertNotNull(response.getBody());
-        assertNotNull(response.getBody().getDeviceId());
-        assertEquals(2L, response.getBody().getHitCount()); // not new device, second hit
-        assertEquals(userAgent.getOsName(), response.getBody().getOsName());
-        assertEquals(userAgent.getOsVersion(), response.getBody().getOsVersion());
-        assertEquals(userAgent.getBrowserName(), response.getBody().getBrowserName());
-        assertEquals(userAgent.getBrowserVersion(), response.getBody().getBrowserVersion());
+        assertNotNull(response.getBody().deviceId());
+        assertEquals(2L, response.getBody().hitCount()); // not new device, second hit
+        assertEquals(userAgent.osName(), response.getBody().osName());
+        assertEquals(userAgent.osVersion(), response.getBody().osVersion());
+        assertEquals(userAgent.browserName(), response.getBody().browserName());
+        assertEquals(userAgent.browserVersion(), response.getBody().browserVersion());
     }
 
     @Test
@@ -185,16 +185,16 @@ public class DeviceProfileControllerIntegrationTest {
         assertEquals(HttpStatus.OK, matchResponse.getStatusCode());
         assertNotNull(matchResponse.getBody());
 
-        ResponseEntity<DeviceProfileDTO> response = getDeviceById(matchResponse.getBody().getDeviceId());
+        ResponseEntity<DeviceProfileDTO> response = getDeviceById(matchResponse.getBody().deviceId());
 
         assertNotNull(response.getBody());
         assertEquals(HttpStatus.OK, response.getStatusCode());
-        assertEquals(matchResponse.getBody().getDeviceId(), response.getBody().getDeviceId());
-        assertEquals(matchResponse.getBody().getHitCount(), response.getBody().getHitCount());
-        assertEquals(matchResponse.getBody().getOsName(), response.getBody().getOsName());
-        assertEquals(matchResponse.getBody().getOsVersion(), response.getBody().getOsVersion());
-        assertEquals(matchResponse.getBody().getBrowserName(), response.getBody().getBrowserName());
-        assertEquals(matchResponse.getBody().getBrowserVersion(), response.getBody().getBrowserVersion());
+        assertEquals(matchResponse.getBody().deviceId(), response.getBody().deviceId());
+        assertEquals(matchResponse.getBody().hitCount(), response.getBody().hitCount());
+        assertEquals(matchResponse.getBody().osName(), response.getBody().osName());
+        assertEquals(matchResponse.getBody().osVersion(), response.getBody().osVersion());
+        assertEquals(matchResponse.getBody().browserName(), response.getBody().browserName());
+        assertEquals(matchResponse.getBody().browserVersion(), response.getBody().browserVersion());
     }
 
     @Test
@@ -230,13 +230,13 @@ public class DeviceProfileControllerIntegrationTest {
 
         var devicesByOS = response.getBody();
 
-        assertEquals(expectedDevices.size(), devicesByOS.getDevices().size());
+        assertEquals(expectedDevices.size(), devicesByOS.devices().size());
 
-        assertTrue(expectedDevices.stream().anyMatch(d -> d.getDeviceId().equals(device1.getDeviceId())));
-        assertTrue(expectedDevices.stream().anyMatch(d -> d.getDeviceId().equals(device2.getDeviceId())));
-        assertTrue(expectedDevices.stream().anyMatch(d -> d.getDeviceId().equals(device3.getDeviceId())));
+        assertTrue(expectedDevices.stream().anyMatch(d -> d.deviceId().equals(device1.deviceId())));
+        assertTrue(expectedDevices.stream().anyMatch(d -> d.deviceId().equals(device2.deviceId())));
+        assertTrue(expectedDevices.stream().anyMatch(d -> d.deviceId().equals(device3.deviceId())));
 
-        assertTrue(devicesByOS.getDevices().stream().allMatch(d -> d.getOsName().equalsIgnoreCase(osName)));
+        assertTrue(devicesByOS.devices().stream().allMatch(d -> d.osName().equalsIgnoreCase(osName)));
     }
 
     @Test
@@ -261,15 +261,15 @@ public class DeviceProfileControllerIntegrationTest {
 
         // 1 - Match Device and Check Device Exists After Creation
         var matchedDevice = matchDevice(userAgentString).getBody();
-        var currentDevice = getDeviceById(matchedDevice.getDeviceId()).getBody();
-        assertEquals(matchedDevice.getDeviceId(), currentDevice.getDeviceId());
+        var currentDevice = getDeviceById(matchedDevice.deviceId()).getBody();
+        assertEquals(matchedDevice.deviceId(), currentDevice.deviceId());
 
         // Delete created device profile
-        var deleteResponse = deleteDeviceById(currentDevice.getDeviceId());
+        var deleteResponse = deleteDeviceById(currentDevice.deviceId());
         assertEquals(HttpStatus.NO_CONTENT, deleteResponse.getStatusCode());
 
         // Check device profile was removed from database
-        var response = getDeviceById(currentDevice.getDeviceId());
+        var response = getDeviceById(currentDevice.deviceId());
         assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
     }
 

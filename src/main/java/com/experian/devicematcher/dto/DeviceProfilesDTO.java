@@ -7,23 +7,16 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import java.util.List;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class DeviceProfilesDTO {
+public record DeviceProfilesDTO(
     @JsonProperty("devices")
-    private final List<DeviceProfileDTO> devices;
-
-    public DeviceProfilesDTO() {
-        this.devices = List.of();
-    }
-
-    public DeviceProfilesDTO(List<DeviceProfileDTO> devices) {
-        this.devices = devices;
+    List<DeviceProfileDTO> devices
+) {
+    // Compact constructor to ensure devices is never null
+    public DeviceProfilesDTO {
+        devices = devices == null ? List.of() : devices;
     }
 
     public static DeviceProfilesDTO from(List<DeviceProfile> devices) {
         return new DeviceProfilesDTO(devices.stream().map(DeviceProfileDTO::from).toList());
-    }
-
-    public List<DeviceProfileDTO> getDevices() {
-        return devices;
     }
 }
