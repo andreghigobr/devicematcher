@@ -52,14 +52,14 @@ public class DeviceProfileAerospikeRepository implements DeviceProfileRepository
         logger.info("Retrieving device by ID from Aerospike | deviceId={}", deviceId);
 
         Key key = new Key(namespace, setName, deviceId);
-        Record record = client.get(policies.newDefaultPolicy(), key);
+        Record rec = client.get(policies.newDefaultPolicy(), key);
 
-        if (record == null) {
+        if (rec == null) {
             logger.debug("Device not found | deviceId={}", deviceId);
             return Optional.empty();
         }
 
-        var device = DeviceProfileBins.toEntity(record);
+        var device = DeviceProfileBins.toEntity(rec);
         logger.debug("Device by id {} found | device={}", deviceId, device);
         return Optional.of(device);
     }
@@ -86,13 +86,10 @@ public class DeviceProfileAerospikeRepository implements DeviceProfileRepository
         var devices = new ArrayList<DeviceProfile>();
         try (RecordSet rs = client.query(policy, stmt)) {
             if (rs.next()) {
-                Record record = rs.getRecord();
-                var device = DeviceProfileBins.toEntity(record);
+                Record rec = rs.getRecord();
+                var device = DeviceProfileBins.toEntity(rec);
                 devices.add(device);
             }
-        } catch (Exception ex) {
-            logger.error("Error retrieving device profiles by UserAgent from Aerospike | userAgent={} error={}", userAgent, ex.getMessage());
-            throw ex;
         }
 
         logger.debug("Devices found | total={} userAgent={}", devices.size(), userAgent);
@@ -112,13 +109,10 @@ public class DeviceProfileAerospikeRepository implements DeviceProfileRepository
         List<DeviceProfile> devices = new ArrayList<>();
         try (RecordSet recordSet = client.query(policy, stmt)) {
             while (recordSet.next()) {
-                Record record = recordSet.getRecord();
-                var device = DeviceProfileBins.toEntity(record);
+                Record rec = recordSet.getRecord();
+                var device = DeviceProfileBins.toEntity(rec);
                 devices.add(device);
             }
-        } catch (Exception ex) {
-            logger.error("Error retrieving devices by OS from Aerospike | osName={} error={}", osName, ex.getMessage());
-            throw ex;
         }
 
         logger.debug("Devices by OS {} found | devices={}", osName, devices.size());
@@ -154,13 +148,13 @@ public class DeviceProfileAerospikeRepository implements DeviceProfileRepository
 
         var policy = policies.newWritePolicy();
         Key key = new Key(namespace, setName, deviceId);
-        var record = client.operate(
+        var rec = client.operate(
             policy, key,
             Operation.add(new Bin(HIT_COUNT, 1L)),
             Operation.get(HIT_COUNT)
         );
 
-        var updatedHitCount = record.getLong(HIT_COUNT);
+        var updatedHitCount = rec.getLong(HIT_COUNT);
         logger.debug("Device HitCount updated | deviceId={} | updatedHitCount={}", deviceId, updatedHitCount);
         return updatedHitCount;
     }

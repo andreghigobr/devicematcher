@@ -40,7 +40,7 @@ public class AerospikeConfig {
     private Integer timeout;
 
     @Value("${aerospike.config.create-indexes:false}")
-    private Boolean createIndexes;
+    private boolean createIndexes;
 
     @Value("${aerospike.config.index.osname}")
     private String osNameIndex;

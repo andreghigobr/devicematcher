@@ -42,7 +42,6 @@ public class DeviceProfileServiceImpl implements DeviceProfileService {
 
             return repository.findDeviceProfileById(deviceId);
         } catch (Exception ex) {
-            logger.error("Error getting device by ID: {}", ex.getMessage(), ex);
             throw new DeviceProfileException(ex);
         }
     }
@@ -67,7 +66,6 @@ public class DeviceProfileServiceImpl implements DeviceProfileService {
             long hitCount = repository.incrementHitCount(device.deviceId());
             return device.withHitCount(hitCount);
         } catch (Exception ex) {
-            logger.error("Error matching device by User-Agent: {}", ex.getMessage(), ex);
             throw new DeviceProfileMatchException(ex);
         }
     }
@@ -75,13 +73,12 @@ public class DeviceProfileServiceImpl implements DeviceProfileService {
     @Override
     public List<DeviceProfile> getDevicesByOS(String osName) throws DeviceProfileException {
         try {
-            logger.info("Getting Device By OS name | osName={}", osName.toLowerCase());
+            logger.info("Getting Device By OS name | osName={}", osName);
             requireNonNull(osName, "OS Name cannot be null");
             if (osName.isBlank()) throw new IllegalArgumentException("OS Name cannot be blank");
 
             return repository.findDeviceProfilesByOSName(osName.toLowerCase());
         } catch (Exception ex) {
-            logger.error("Error getting devices by OS name: {}", ex.getMessage(), ex);
             throw new DeviceProfileException(ex);
         }
     }
@@ -95,7 +92,6 @@ public class DeviceProfileServiceImpl implements DeviceProfileService {
 
             repository.deleteDeviceProfileById(deviceId);
         } catch (Exception ex) {
-            logger.error("Error deleting device by ID: {}", ex.getMessage(), ex);
             throw new DeviceProfileDeleteException(ex);
         }
     }

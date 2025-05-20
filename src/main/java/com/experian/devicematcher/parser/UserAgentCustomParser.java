@@ -16,6 +16,8 @@ import ua_parser.Parser;
 public class UserAgentCustomParser implements UserAgentParser {
     private static final Logger logger = LoggerFactory.getLogger(UserAgentCustomParser.class);
 
+    private static final String UNKNOWN = "unknown";
+    private static final String OTHER = "Other";
     private final Parser uaParser;
 
     @Autowired
@@ -26,6 +28,7 @@ public class UserAgentCustomParser implements UserAgentParser {
     @Override
     public UserAgent parse(String userAgentString) throws UserAgentParsingException {
         try {
+            logger.info("Parsing User-Agent string: {}", userAgentString);
             if (StringUtils.isBlank(userAgentString)) throw new IllegalArgumentException("User-Agent string is blank");
 
             Client client = uaParser.parse(userAgentString);
@@ -37,13 +40,12 @@ public class UserAgentCustomParser implements UserAgentParser {
                 parseBrowserVersion(client)
             );
         } catch (Exception ex) {
-            logger.error("Error parsing User-Agent string: {}", ex.getMessage(), ex);
             throw new UserAgentParsingException(ex);
         }
     }
 
     private String parseOSName(Client client) {
-        return client.os.family == null ? "Unknown" : (client.os.family.equalsIgnoreCase("Other") ? "Unknown" : client.os.family);
+        return client.os.family == null ? UNKNOWN : (client.os.family.equalsIgnoreCase(OTHER) ? UNKNOWN : client.os.family);
     }
 
     private String parseOSVersion(Client client) {
@@ -54,7 +56,7 @@ public class UserAgentCustomParser implements UserAgentParser {
     }
 
     private String parseBrowserName(Client client) {
-        return client.userAgent.family == null ? "Unknown" : (client.userAgent.family.equalsIgnoreCase("Other") ? "Unknown" : client.userAgent.family);
+        return client.userAgent.family == null ? UNKNOWN : (client.userAgent.family.equalsIgnoreCase(OTHER) ? UNKNOWN : client.userAgent.family);
     }
 
     private String parseBrowserVersion(Client client) {

@@ -11,17 +11,14 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 @Tag("unit")
-public class UserAgentDeviceRegexParserTest {
+class UserAgentDeviceRegexParserTest {
     private final Parser uaParser = new Parser();
     private final UserAgentParser parser = new UserAgentCustomParser(uaParser);
 
     @Test
-    public void parseUserAgent_WhenUserAgentIsNull_ShouldThrowException() {
-        // Arrange
-        String userAgent = null;
-
+    void parseUserAgent_WhenUserAgentIsNull_ShouldThrowException() {
         // Act & Assert
-        assertThrows(UserAgentParsingException.class, () -> parser.parse(userAgent));
+        assertThrows(UserAgentParsingException.class, () -> parser.parse(null));
     }
 
     @ParameterizedTest
@@ -38,7 +35,7 @@ public class UserAgentDeviceRegexParserTest {
         "'Mozilla/5.0 (Android 12; Mobile; rv:102.0) Gecko/102.0 Firefox/102.0', 'android', '12.0.0', 'firefox mobile', '102.0.0'",
         "'Mozilla/5.0 (iPhone; CPU iPhone OS 16_0 like Mac OS X) AppleWebKit/537.36 (KHTML, like Gecko) CriOS/116.0.5845.110 Mobile/15E148 Safari/604.1', 'ios', '16.0.0', 'chrome mobile ios', '116.0.5845'",
     })
-    public void parseUserAgent_WhenValidUserAgent_ShouldReturnDevice(
+    void parseUserAgent_WhenValidUserAgent_ShouldReturnDevice(
             String userAgent,
             String expectedOsName,
             String expectedOsVersion,

@@ -24,7 +24,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.*;
 
 @Tag("unit")
-public class DeviceProfileServiceImplTest {
+class DeviceProfileServiceImplTest {
     @Mock
     private UserAgentParser userAgentParser;
 
@@ -43,7 +43,7 @@ public class DeviceProfileServiceImplTest {
     }
 
     @Test
-    public void getDeviceById_WhenIdIsNull() throws Exception {
+    void getDeviceById_WhenIdIsNull() {
         // Arrange
         String deviceId = null;
         when(repository.findDeviceProfileById(deviceId)).thenReturn(Optional.empty());
@@ -56,7 +56,7 @@ public class DeviceProfileServiceImplTest {
     }
 
     @Test
-    public void getDeviceById_Id_Invalid() throws Exception {
+    void getDeviceById_Id_Invalid() throws Exception {
         // Arrange
         String deviceId = UUID.randomUUID().toString();
         when(repository.findDeviceProfileById(deviceId)).thenReturn(Optional.empty());
@@ -72,7 +72,7 @@ public class DeviceProfileServiceImplTest {
     }
 
     @Test
-    public void getDeviceById_WhenExistingId_ThenReturnDevice() throws Exception {
+    void getDeviceById_WhenExistingId_ThenReturnDevice() throws Exception {
         // Arrange
         String deviceId = UUID.randomUUID().toString();
         UserAgent userAgent = new UserAgent("Windows", "10", "Chrome", "90");
@@ -95,7 +95,7 @@ public class DeviceProfileServiceImplTest {
     }
 
     @Test
-    public void matchDevice_WhenInvalidUserAgent_ThenThrowsException() throws Exception {
+    void matchDevice_WhenInvalidUserAgent_ThenThrowsException() throws Exception {
         // Arrange
         String userAgentString = "MozilxxxxxxxxxINVALIDxxxxxxxxxx5.110 Mobilexxxxxari/537.36";
         when(userAgentParser.parse(userAgentString)).thenThrow(new IllegalArgumentException("Invalid User Agent"));
@@ -109,7 +109,7 @@ public class DeviceProfileServiceImplTest {
     }
 
     @Test
-    public void matchDevice_WhenValidUserAgent_NewDevice_ThenReturnDeviceWithCount1() throws Exception {
+    void matchDevice_WhenValidUserAgent_NewDevice_ThenReturnDeviceWithCount1() throws Exception {
         // Arrange
         String ua = "Mozilla/5.0 (iPhone; CPU iPhone OS 16_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/16.0 Mobile/15E148 Safari/604.1";
         var osName = "iPhone";
@@ -147,7 +147,7 @@ public class DeviceProfileServiceImplTest {
     }
 
     @Test
-    public void matchDevice_WhenValidUserAgent_ExistingDevice_ThenReturnDeviceWithCountGreaterThan1() throws Exception {
+    void matchDevice_WhenValidUserAgent_ExistingDevice_ThenReturnDeviceWithCountGreaterThan1() throws Exception {
         // Arrange
         String ua = "Mozilla/5.0 (iPhone; CPU iPhone OS 16_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/16.0 Mobile/15E148 Safari/604.1";
         var osName = "iPhone";
@@ -186,7 +186,7 @@ public class DeviceProfileServiceImplTest {
     }
 
     @Test
-    public void getDevicesByOS_WhenNullOSName_ShouldThrowException() throws Exception {
+    void getDevicesByOS_WhenNullOSName_ShouldThrowException() {
         String osName = null;
         assertThrows(DeviceProfileException.class, () -> { service.getDevicesByOS(osName);});
         verify(repository, times(0)).findDeviceProfilesByOSName(osName);
@@ -194,7 +194,7 @@ public class DeviceProfileServiceImplTest {
     }
 
     @Test
-    public void getDevicesByOS_WhenEmptyOSName_ShouldThrowException() throws Exception {
+    void getDevicesByOS_WhenEmptyOSName_ShouldThrowException() {
         String osName = "";
         assertThrows(DeviceProfileException.class, () -> { service.getDevicesByOS(osName);});
         verify(repository, times(0)).findDeviceProfilesByOSName(osName);
@@ -202,7 +202,7 @@ public class DeviceProfileServiceImplTest {
     }
 
     @Test
-    public void getDevicesByOS_WhenValidOSName_NotExists_ShouldReturnEmptyList() throws Exception {
+    void getDevicesByOS_WhenValidOSName_NotExists_ShouldReturnEmptyList() throws Exception {
         String osName = "alternative OS";
         when(repository.findDeviceProfilesByOSName(osName)).thenReturn(List.of());
 
@@ -214,7 +214,7 @@ public class DeviceProfileServiceImplTest {
     }
 
     @Test
-    public void getDevicesByOS_WhenValidOSName_Exists_ShouldReturnList() throws Exception {
+    void getDevicesByOS_WhenValidOSName_Exists_ShouldReturnList() throws Exception {
         String osName = "windows";
         UserAgent userAgent = new UserAgent(osName, "10", "Chrome", "90");
         var device = new DeviceProfile("deviceId", 0L, userAgent);
@@ -235,7 +235,7 @@ public class DeviceProfileServiceImplTest {
     }
 
     @Test
-    public void deleteDeviceById_WhenNullId_ShouldThrowException() throws DeviceProfileException {
+    void deleteDeviceById_WhenNullId_ShouldThrowException() {
         String deviceId = null;
 
         assertThrows(DeviceProfileException.class, () -> { service.deleteDeviceById(deviceId); });
@@ -244,7 +244,7 @@ public class DeviceProfileServiceImplTest {
     }
 
     @Test
-    public void deleteDeviceById_WhenEmptyId_ShouldThrowException() {
+    void deleteDeviceById_WhenEmptyId_ShouldThrowException() {
         String deviceId = "";
 
         assertThrows(DeviceProfileException.class, () -> { service.deleteDeviceById(deviceId); });
@@ -253,7 +253,7 @@ public class DeviceProfileServiceImplTest {
     }
 
     @Test
-    public void deleteDeviceById_WhenValidId_ThenDelete() throws DeviceProfileException {
+    void deleteDeviceById_WhenValidId_ThenDelete() throws DeviceProfileException {
         String deviceId = UUID.randomUUID().toString();
 
         service.deleteDeviceById(deviceId);
