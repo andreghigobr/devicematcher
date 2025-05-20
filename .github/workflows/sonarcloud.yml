@@ -1,9 +1,9 @@
 name: SonarCloud Analysis
 on:
   push:
-    branches: [ main ]
+    branches: [ main, chore/sonar ]
   pull_request:
-    branches: [ main ]
+    branches: [ main, chore/sonar ]
   workflow_dispatch:
 
 jobs:
