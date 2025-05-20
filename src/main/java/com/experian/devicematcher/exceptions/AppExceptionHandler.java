@@ -16,8 +16,8 @@ public class AppExceptionHandler {
     @ExceptionHandler(DeviceProfileNotFoundException.class)
     public ResponseEntity<ApiErrorDTO> handleDeviceProfileNotFoundException(DeviceProfileNotFoundException ex) {
         logger.error("DeviceProfileNotFoundException: {}", ex.getMessage(), ex);
-        var error = new ApiErrorDTO(HttpStatus.INTERNAL_SERVER_ERROR.value(), ex.getClass().getSimpleName(), ex.getMessage());
-        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(error);
+        var error = new ApiErrorDTO(HttpStatus.NOT_FOUND.value(), ex.getClass().getSimpleName(), ex.getMessage());
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(error);
     }
 
     @ExceptionHandler(UserAgentParsingException.class)
@@ -39,6 +39,13 @@ public class AppExceptionHandler {
         logger.error("DeviceProfileMatchException: {}", ex.getMessage(), ex);
         var error = new ApiErrorDTO(HttpStatus.BAD_REQUEST.value(), ex.getClass().getSimpleName(), ex.getMessage());
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error);
+    }
+
+    @ExceptionHandler(DeviceProfileDeleteException.class)
+    public ResponseEntity<ApiErrorDTO> handleDeviceProfileDeleteException(DeviceProfileDeleteException ex) {
+        logger.error("DeviceProfileDeleteException: {}", ex.getMessage(), ex);
+        var error = new ApiErrorDTO(HttpStatus.INTERNAL_SERVER_ERROR.value(), ex.getClass().getSimpleName(), ex.getMessage());
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(error);
     }
 
     @ExceptionHandler(HandlerMethodValidationException.class)

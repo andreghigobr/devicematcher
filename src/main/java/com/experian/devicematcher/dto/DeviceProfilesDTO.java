@@ -11,7 +11,6 @@ public record DeviceProfilesDTO(
     @JsonProperty("devices")
     List<DeviceProfileDTO> devices
 ) {
-    // Compact constructor to ensure devices is never null
     public DeviceProfilesDTO {
         devices = devices == null ? List.of() : devices;
     }

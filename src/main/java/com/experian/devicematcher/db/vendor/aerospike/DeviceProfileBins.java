@@ -3,6 +3,7 @@ package com.experian.devicematcher.db.vendor.aerospike;
 import com.aerospike.client.Bin;
 import com.aerospike.client.Record;
 import com.experian.devicematcher.domain.DeviceProfile;
+import com.experian.devicematcher.domain.SemVersion;
 import com.experian.devicematcher.domain.UserAgent;
 
 public class DeviceProfileBins {
@@ -24,9 +25,9 @@ public class DeviceProfileBins {
             rec.getLong(HIT_COUNT),
             new UserAgent(
                 rec.getString(OS_NAME),
-                rec.getString(OS_VERSION),
+                SemVersion.parse(rec.getString(OS_VERSION)),
                 rec.getString(BROWSER_NAME),
-                rec.getString(BROWSER_VERSION)
+                SemVersion.parse(rec.getString(BROWSER_VERSION))
             )
         );
     }
@@ -36,9 +37,9 @@ public class DeviceProfileBins {
             new Bin(DEVICE_ID, device.deviceId()),
             new Bin(HIT_COUNT, device.hitCount()),
             new Bin(OS_NAME, device.userAgent().osName()),
-            new Bin(OS_VERSION, device.userAgent().osVersion()),
+            new Bin(OS_VERSION, device.userAgent().osVersion().toString()),
             new Bin(BROWSER_NAME, device.userAgent().browserName()),
-            new Bin(BROWSER_VERSION, device.userAgent().browserVersion())
+            new Bin(BROWSER_VERSION, device.userAgent().browserVersion().toString())
         };
     }
 }

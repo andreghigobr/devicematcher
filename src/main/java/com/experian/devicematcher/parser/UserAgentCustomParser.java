@@ -1,5 +1,6 @@
 package com.experian.devicematcher.parser;
 
+import com.experian.devicematcher.domain.SemVersion;
 import com.experian.devicematcher.domain.UserAgent;
 import com.experian.devicematcher.exceptions.UserAgentParsingException;
 
@@ -45,24 +46,26 @@ public class UserAgentCustomParser implements UserAgentParser {
     }
 
     private String parseOSName(Client client) {
-        return client.os.family == null ? UNKNOWN : (client.os.family.equalsIgnoreCase(OTHER) ? UNKNOWN : client.os.family);
+        if (client.os.family == null) return UNKNOWN;
+        return client.os.family.equalsIgnoreCase(OTHER) ? UNKNOWN : client.os.family;
     }
 
-    private String parseOSVersion(Client client) {
-        var osMajorVersion = client.os.major == null ? "" : client.os.major;
-        var osMinorVersion = client.os.minor == null ? "0" : client.os.minor;
-        var osPatchVersion = client.os.patch == null ? "0" : client.os.patch;
-        return osMajorVersion.isEmpty() ? "" : (osMajorVersion + "." + osMinorVersion + "." + osPatchVersion);
+    private SemVersion parseOSVersion(Client client) {
+        var major = client.os.major == null ? 0L : Long.parseLong(client.os.major);
+        var minor = client.os.minor == null ? 0L : Long.parseLong(client.os.minor);
+        var patch = client.os.patch == null ? 0L : Long.parseLong(client.os.patch);
+        return new SemVersion(major, minor, patch);
     }
 
     private String parseBrowserName(Client client) {
-        return client.userAgent.family == null ? UNKNOWN : (client.userAgent.family.equalsIgnoreCase(OTHER) ? UNKNOWN : client.userAgent.family);
+        if (client.userAgent.family == null) return UNKNOWN;
+        return client.userAgent.family.equalsIgnoreCase(OTHER) ? UNKNOWN : client.userAgent.family;
     }
 
-    private String parseBrowserVersion(Client client) {
-        var browserMajorVersion = client.userAgent.major == null ? "" : client.userAgent.major;
-        var browserMinorVersion = client.userAgent.minor == null ? "0" : client.userAgent.minor;
-        var browserPatchVersion = client.userAgent.patch == null ? "0" : client.userAgent.patch;
-        return browserMajorVersion.isBlank() ? "" : (browserMajorVersion + "." + browserMinorVersion + "." + browserPatchVersion);
+    private SemVersion parseBrowserVersion(Client client) {
+        var major = client.userAgent.major == null ? 0L : Long.parseLong(client.userAgent.major);
+        var minor = client.userAgent.minor == null ? 0L : Long.parseLong(client.userAgent.minor);
+        var patch = client.userAgent.patch == null ? 0L : Long.parseLong(client.userAgent.patch);
+        return new SemVersion(major, minor, patch);
     }
 }

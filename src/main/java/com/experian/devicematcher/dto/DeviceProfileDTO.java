@@ -29,9 +29,9 @@ public record DeviceProfileDTO(
             deviceProfile.deviceId(),
             deviceProfile.hitCount(),
             deviceProfile.userAgent().osName(),
-            deviceProfile.userAgent().osVersion(),
+            deviceProfile.userAgent().osVersion().toString(),
             deviceProfile.userAgent().browserName(),
-            deviceProfile.userAgent().browserVersion()
+            deviceProfile.userAgent().browserVersion().toString()
         );
     }
 }

@@ -7,6 +7,22 @@ public record DeviceProfile(
     Long hitCount,
     UserAgent userAgent
 ) {
+    public DeviceProfile {
+        if (deviceId == null || deviceId.isBlank()) {
+            throw new IllegalArgumentException("Device ID cannot be null or blank");
+        }
+        if (hitCount == null) {
+            throw new IllegalArgumentException("Hit count cannot be null");
+        }
+        if (hitCount < 0) {
+            throw new IllegalArgumentException("Hit count cannot be negative");
+        }
+        if (userAgent == null) {
+            throw new IllegalArgumentException("User agent cannot be null");
+        }
+    }
+
+
     public static DeviceProfile from(Supplier<String> idSupplier, UserAgent userAgent) {
         return new DeviceProfile(
             idSupplier.get(),
@@ -25,9 +41,9 @@ public record DeviceProfile(
 
     public boolean match(UserAgent userAgent) {
         return this.userAgent.osName().equalsIgnoreCase(userAgent.osName()) &&
-            this.userAgent.osVersion().equalsIgnoreCase(userAgent.osVersion()) &&
+            this.userAgent.osVersion().equals(userAgent.osVersion()) &&
             this.userAgent.browserName().equalsIgnoreCase(userAgent.browserName()) &&
-            this.userAgent.browserVersion().equalsIgnoreCase(userAgent.browserVersion());
+            this.userAgent.browserVersion().equals(userAgent.browserVersion());
     }
 
     @Override

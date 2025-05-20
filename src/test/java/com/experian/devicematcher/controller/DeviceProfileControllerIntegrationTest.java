@@ -112,10 +112,11 @@ class DeviceProfileControllerIntegrationTest {
         assertNotNull(response.getBody());
 
         var device = getDeviceById(response.getBody().deviceId()).getBody();
+        assertNotNull(device);
         assertEquals("unknown", device.osName());
-        assertEquals("", device.osVersion());
+        assertEquals("0.0.0", device.osVersion());
         assertEquals("unknown", device.browserName());
-        assertEquals("", device.browserVersion());
+        assertEquals("0.0.0", device.browserVersion());
     }
 
     @Test
@@ -133,9 +134,9 @@ class DeviceProfileControllerIntegrationTest {
         assertNotNull(response.getBody().deviceId());
         assertEquals(1L, response.getBody().hitCount()); // new device first hit count
         assertEquals(userAgent.osName(), response.getBody().osName());
-        assertEquals(userAgent.osVersion(), response.getBody().osVersion());
+        assertEquals(userAgent.osVersion().toString(), response.getBody().osVersion());
         assertEquals(userAgent.browserName(), response.getBody().browserName());
-        assertEquals(userAgent.browserVersion(), response.getBody().browserVersion());
+        assertEquals(userAgent.browserVersion().toString(), response.getBody().browserVersion());
     }
 
     @Test
@@ -156,9 +157,9 @@ class DeviceProfileControllerIntegrationTest {
         assertNotNull(response.getBody().deviceId());
         assertEquals(2L, response.getBody().hitCount()); // not new device, second hit
         assertEquals(userAgent.osName(), response.getBody().osName());
-        assertEquals(userAgent.osVersion(), response.getBody().osVersion());
+        assertEquals(userAgent.osVersion().toString(), response.getBody().osVersion());
         assertEquals(userAgent.browserName(), response.getBody().browserName());
-        assertEquals(userAgent.browserVersion(), response.getBody().browserVersion());
+        assertEquals(userAgent.browserVersion().toString(), response.getBody().browserVersion());
     }
 
     @Test
