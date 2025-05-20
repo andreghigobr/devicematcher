@@ -12,15 +12,19 @@ public class DeviceProfileBins {
     static final String BROWSER_NAME = "browserName";
     static final String BROWSER_VERSION = "browserVersion";
 
-    public static DeviceProfile toEntity(Record record) {
-        if (record == null) return null;
+    private DeviceProfileBins() {
+        throw new IllegalStateException("Utility class");
+    }
+
+    public static DeviceProfile toEntity(Record rec) {
+        if (rec == null) return null;
         return new DeviceProfile(
-            record.getString(DEVICE_ID),
-            record.getLong(HIT_COUNT),
-            record.getString(OS_NAME),
-            record.getString(OS_VERSION),
-            record.getString(BROWSER_NAME),
-            record.getString(BROWSER_VERSION)
+            rec.getString(DEVICE_ID),
+            rec.getLong(HIT_COUNT),
+            rec.getString(OS_NAME),
+            rec.getString(OS_VERSION),
+            rec.getString(BROWSER_NAME),
+            rec.getString(BROWSER_VERSION)
         );
     }
 

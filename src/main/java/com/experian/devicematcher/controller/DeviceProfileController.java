@@ -2,6 +2,7 @@ package com.experian.devicematcher.controller;
 
 import com.experian.devicematcher.dto.DeviceProfileDTO;
 import com.experian.devicematcher.dto.DeviceProfilesDTO;
+import com.experian.devicematcher.exceptions.DeviceProfileException;
 import com.experian.devicematcher.service.DeviceProfileServiceImpl;
 import com.experian.devicematcher.service.DeviceProfileService;
 
@@ -46,7 +47,7 @@ public class DeviceProfileController {
     public ResponseEntity<DeviceProfileDTO> matchDeviceProfile(
         @Parameter(description = "User-Agent header containing device information", required = true)
         @RequestHeader(value = "User-Agent", required = true) @NotBlank String userAgent
-    ) throws Exception {
+    ) throws DeviceProfileException {
         logger.info("Receiving Match Device Request | userAgent={}", userAgent);
 
         var device = service.matchDevice(userAgent);
@@ -70,7 +71,7 @@ public class DeviceProfileController {
     public ResponseEntity<DeviceProfileDTO> getDeviceProfileById(
         @Parameter(description = "ID of the device to retrieve", required = true)
         @PathVariable(value = "deviceId", required = true) @NotBlank String deviceId
-    ) throws Exception {
+    ) throws DeviceProfileException {
         logger.info("Receiving Get Device Profile By Id Request | deviceId={}", deviceId);
 
         var device = service.getDeviceById(deviceId);
@@ -97,7 +98,7 @@ public class DeviceProfileController {
     public ResponseEntity<DeviceProfilesDTO> getDeviceProfiles(
         @Parameter(description = "Operating system name", required = true)
         @RequestHeader(value = "os-name", required = true) @NotBlank String osName
-    ) throws Exception {
+    ) throws DeviceProfileException {
         logger.info("Receiving Get Device Profiles Request | osName={}", osName);
 
         var devices = service.getDevicesByOS(osName);
@@ -124,9 +125,8 @@ public class DeviceProfileController {
     public ResponseEntity<Object> deleteDeviceProfile(
         @Parameter(description = "ID of the device to delete", required = true)
         @PathVariable(value = "deviceId", required = true) @NotBlank String deviceId
-    ) throws Exception {
+    ) throws DeviceProfileException {
         logger.info("Receiving Delete Device Profile Request | deviceId={}", deviceId);
-
         service.deleteDeviceById(deviceId);
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
