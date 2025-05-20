@@ -21,6 +21,8 @@ import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.utility.DockerImageName;
 
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
+import java.util.stream.IntStream;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -282,6 +284,41 @@ class DeviceProfileControllerIntegrationTest {
         // Check device profile was removed from database
         var response = getDeviceById(currentDevice.deviceId());
         assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
+    }
+
+    @Test
+    void matchDevice_stressTestParallel() throws Exception {
+        // Arrange
+        var userAgentString = "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/116.0.5845.110 Safari/537.36 Edg/116.0.1938.69";
+        var userAgent = userAgentParser.parse(userAgentString);
+
+        ResponseEntity<DeviceProfileDTO> firstResponse = matchDevice(userAgentString);
+        assertNotNull(firstResponse.getBody());
+        String deviceId = firstResponse.getBody().deviceId();
+
+        var totalThreads = 5;
+        var requestsPerThread = 200;
+        List<CompletableFuture<Void>> futures = IntStream.range(0, totalThreads)
+            .mapToObj(i -> CompletableFuture.runAsync(() -> {
+                IntStream.range(0, requestsPerThread).forEach(j -> matchDevice(userAgentString));
+            }))
+            .toList();
+
+        CompletableFuture.allOf(futures.toArray(new CompletableFuture[0])).join();
+
+        ResponseEntity<DeviceProfileDTO> finalResponse = getDeviceById(deviceId);
+
+        // Assert
+        assertEquals(HttpStatus.OK, finalResponse.getStatusCode());
+        assertNotNull(finalResponse.getBody());
+        assertEquals(deviceId, finalResponse.getBody().deviceId());
+        assertEquals(userAgent.osName(), finalResponse.getBody().osName());
+        assertEquals(userAgent.osVersion().toString(), finalResponse.getBody().osVersion());
+        assertEquals(userAgent.browserName(), finalResponse.getBody().browserName());
+        assertEquals(userAgent.browserVersion().toString(), finalResponse.getBody().browserVersion());
+
+        // +1 for the first hit
+        assertEquals(totalThreads * requestsPerThread + 1, finalResponse.getBody().hitCount());
     }
 
     //----------------------------------------
