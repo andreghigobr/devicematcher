@@ -52,16 +52,4 @@ public record DeviceProfile(
     public int hashCode() {
         return deviceId.hashCode();
     }
-
-    @Override
-    public String toString() {
-        return "DeviceProfile{" +
-            "deviceId='" + deviceId + '\'' +
-            ", hitCount=" + hitCount +
-            ", osName='" + osName + '\'' +
-            ", osVersion='" + osVersion + '\'' +
-            ", browserName='" + browserName + '\'' +
-            ", browserVersion='" + browserVersion + '\'' +
-            '}';
-    }
 }

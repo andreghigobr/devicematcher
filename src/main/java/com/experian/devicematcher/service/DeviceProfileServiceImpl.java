@@ -73,7 +73,7 @@ public class DeviceProfileServiceImpl implements DeviceProfileService {
     @Override
     public List<DeviceProfile> getDevicesByOS(String osName) throws DeviceProfileException {
         try {
-            logger.info("Getting Device By OS name | osName={}", osName.toLowerCase());
+            logger.info("Getting Device By OS name | osName={}", osName);
             requireNonNull(osName, "OS Name cannot be null");
             if (osName.isBlank()) throw new IllegalArgumentException("OS Name cannot be blank");
 
