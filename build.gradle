@@ -121,5 +121,10 @@ sonar {
         property "sonar.projectKey", "andreghigobr_devicematcher"
         property "sonar.organization", "aghigo-github"
         property "sonar.host.url", "https://sonarcloud.io"
+
+        property "sonar.sources", "src/main/java"
+        property "sonar.tests", "src/test/java"
+        property "sonar.java.coveragePlugin", "jacoco"
+        property "sonar.coverage.jacoco.xmlReportPaths", "${buildDir}/reports/jacoco/test/jacocoTestReport.xml"
     }
 }
