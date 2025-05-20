@@ -11,12 +11,12 @@ import java.util.function.Supplier;
 import static org.junit.jupiter.api.Assertions.*;
 
 @Tag("unit")
-public class DeviceProfileTest {
+class DeviceProfileTest {
     private final Parser uaParser = new Parser();
     private final UserAgentParser userAgentParser = new UserAgentCustomParser(uaParser);
 
     @Test
-    public void createNewDevice_fromIdSupplier_and_UserAgent() throws Exception {
+    void createNewDevice_fromIdSupplier_and_UserAgent() throws Exception {
         var userAgentString = "Mozilla/5.0 (iPhone; CPU iPhone OS 16_0 like Mac OS X) AppleWebKit/537.36 (KHTML, like Gecko) CriOS/116.0.5845.110 Mobile/15E148 Safari/604.1";
         var userAgent = userAgentParser.parse(userAgentString);
         var deviceId = "1234";
@@ -32,7 +32,7 @@ public class DeviceProfileTest {
     }
 
     @Test
-    public void match_whenUserAgentMatchDevice() throws Exception {
+    void match_whenUserAgentMatchDevice() throws Exception {
         var userAgentString = "Mozilla/5.0 (iPhone; CPU iPhone OS 16_0 like Mac OS X) AppleWebKit/537.36 (KHTML, like Gecko) CriOS/116.0.5845.110 Mobile/15E148 Safari/604.1";
         var userAgent = userAgentParser.parse(userAgentString);
         var deviceId = "1234";
@@ -44,7 +44,7 @@ public class DeviceProfileTest {
     }
 
     @Test
-    public void match_whenUserAgentDoesNotMatchDevice() throws Exception {
+    void match_whenUserAgentDoesNotMatchDevice() throws Exception {
         var userAgentString = "Mozilla/5.0 (iPhone; CPU iPhone OS 16_0 like Mac OS X) AppleWebKit/537.36 (KHTML, like Gecko) CriOS/116.0.5845.110 Mobile/15E148 Safari/604.1";
         var userAgent = userAgentParser.parse(userAgentString);
         var device = new DeviceProfile("1", 0L, "android", "12.0.0", "chrome mobile", "116.0.5845");

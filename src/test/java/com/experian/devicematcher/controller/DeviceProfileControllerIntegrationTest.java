@@ -29,10 +29,10 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @ActiveProfiles("test")
 @TestPropertySource(locations = "classpath:application-test.properties")
-public class DeviceProfileControllerIntegrationTest {
+class DeviceProfileControllerIntegrationTest {
     private static final Logger logger = LoggerFactory.getLogger(DeviceProfileControllerIntegrationTest.class);
 
-    private static GenericContainer<?> aerospikeContainer;
+    private static final GenericContainer<?> aerospikeContainer;
 
     private static final int AEROSPIKE_PORT = 3000;
     private static final String AEROSPIKE_NAMESPACE = "devicematcher";
@@ -80,12 +80,12 @@ public class DeviceProfileControllerIntegrationTest {
     }
 
     @BeforeEach
-    public void setUpTest() {
+    void setUpTest() {
         baseUrl = "http://localhost:" + port;
     }
 
     @AfterAll
-    public static void tearDownContainer() {
+    static void tearDownContainer() {
         try {
             if (aerospikeContainer != null && aerospikeContainer.isRunning()) {
                 aerospikeContainer.stop();
@@ -97,7 +97,7 @@ public class DeviceProfileControllerIntegrationTest {
     }
 
     @Test
-    public void matchDevice_WithBlankUserAgent_ShouldReturnBadRequest() throws Exception {
+    void matchDevice_WithBlankUserAgent_ShouldReturnBadRequest() {
         // Act
         ResponseEntity<DeviceProfileDTO> response = matchDevice("");
         // Assert
@@ -105,12 +105,15 @@ public class DeviceProfileControllerIntegrationTest {
     }
 
     @Test
-    public void matchDevice_WithInvalidUserAgent_ShouldReturnOK_UnknownDevice() throws Exception {
+    void matchDevice_WithInvalidUserAgent_ShouldReturnOK_UnknownDevice() {
         // Act
         ResponseEntity<DeviceProfileDTO> response = matchDevice("Invalid User-Agent String");
         assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertNotNull(response.getBody());
 
         var device = getDeviceById(response.getBody().getDeviceId()).getBody();
+        assertNotNull(device);
+
         assertEquals("unknown", device.getOsName());
         assertEquals("", device.getOsVersion());
         assertEquals("unknown", device.getBrowserName());
@@ -118,7 +121,7 @@ public class DeviceProfileControllerIntegrationTest {
     }
 
     @Test
-    public void matchDevice_WithValidUserAgent_NewDevice_FirstHit_ShouldReturnDeviceWithHitCount_1() throws Exception {
+    void matchDevice_WithValidUserAgent_NewDevice_FirstHit_ShouldReturnDeviceWithHitCount_1() throws Exception {
         // Arrange
         var userAgentString = "Mozilla/5.0 (Linux; Android 12) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/105.0.0.0 Mobile Safari/537.36";
         var userAgent = userAgentParser.parse(userAgentString);
@@ -138,7 +141,7 @@ public class DeviceProfileControllerIntegrationTest {
     }
 
     @Test
-    public void matchDevice_WithValidUserAgent_ExistingDevice_SecondHit_ShouldReturnDeviceWithHitCount_2() throws Exception {
+    void matchDevice_WithValidUserAgent_ExistingDevice_SecondHit_ShouldReturnDeviceWithHitCount_2() throws Exception {
         // Arrange
         var userAgentString = "Mozilla/5.0 (iPhone; CPU iPhone OS 16_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/16.0 Mobile/15E148 Safari/604.1";
         var userAgent = userAgentParser.parse(userAgentString);
@@ -161,21 +164,21 @@ public class DeviceProfileControllerIntegrationTest {
     }
 
     @Test
-    public void getDevicesById_WithBlankId_ShouldReturnNotFoundResource() {
+    void getDevicesById_WithBlankId_ShouldReturnNotFoundResource() {
         String deviceId = "";
         ResponseEntity<DeviceProfileDTO> response = getDeviceById(deviceId);
         assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, response.getStatusCode());
     }
 
     @Test
-    public void getDevicesById_WithValidId_NotExists_ShouldReturnNotFound() throws Exception {
+    void getDevicesById_WithValidId_NotExists_ShouldReturnNotFound() {
         String deviceId = "INVALID USER ID";
         ResponseEntity<DeviceProfileDTO> response = getDeviceById(deviceId);
         assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
     }
 
     @Test
-    public void getDevicesById_WithValidId_Exists_ShouldReturnOK() {
+    void getDevicesById_WithValidId_Exists_ShouldReturnOK() {
         // Arrange
         var userAgentString = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/116.0.5845.110 Safari/537.36";
 
@@ -198,7 +201,7 @@ public class DeviceProfileControllerIntegrationTest {
     }
 
     @Test
-    public void getDevicesByOS_WithBlankOS_ShouldReturnBadRequest() {
+    void getDevicesByOS_WithBlankOS_ShouldReturnBadRequest() {
         // Act
         ResponseEntity<DeviceProfilesDTO> response = getDevicesByOS("");
 
@@ -207,7 +210,7 @@ public class DeviceProfileControllerIntegrationTest {
     }
 
     @Test
-    public void getDevicesByOS_WithInvalidOS_ShouldReturnNotFound() {
+    void getDevicesByOS_WithInvalidOS_ShouldReturnNotFound() {
         // Act
         ResponseEntity<DeviceProfilesDTO> response = getDevicesByOS("INVALID OS");
 
@@ -216,12 +219,18 @@ public class DeviceProfileControllerIntegrationTest {
     }
 
     @Test
-    public void getDevicesByOS_WithValidOS_ShouldReturnOK() {
+    void getDevicesByOS_WithValidOS_ShouldReturnOK() {
         // Act
         var osName = "Linux";
         var device1 = matchDevice("Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101 Firefox/102.0").getBody();
+        assertNotNull(device1);
+
         var device2 = matchDevice("Mozilla/5.0 (X11; Linux 86_64) AppleWebKit/537.36 (KHTML, like Gecko) Safari/537.36").getBody();
+        assertNotNull(device2);
+
         var device3 = matchDevice("Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/116.0.5845.110 Safari/537.36 Edg/116.0.1938.69").getBody();
+        assertNotNull(device3);
+
         var expectedDevices = List.of(device1, device2, device3);
 
         // Act
@@ -230,6 +239,7 @@ public class DeviceProfileControllerIntegrationTest {
 
         var devicesByOS = response.getBody();
 
+        assertNotNull(devicesByOS);
         assertEquals(expectedDevices.size(), devicesByOS.getDevices().size());
 
         assertTrue(expectedDevices.stream().anyMatch(d -> d.getDeviceId().equals(device1.getDeviceId())));
@@ -240,7 +250,7 @@ public class DeviceProfileControllerIntegrationTest {
     }
 
     @Test
-    public void deleteDeviceById_WithBlankId_ShouldReturnBadRequest() {
+    void deleteDeviceById_WithBlankId_ShouldReturnBadRequest() {
         // Act
         ResponseEntity<DeviceProfileDTO> response = deleteDeviceById("");
         // Assert
@@ -248,20 +258,22 @@ public class DeviceProfileControllerIntegrationTest {
     }
 
     @Test
-    public void deleteDeviceById_WithNonExistedId_ShouldReturnOK() {
+    void deleteDeviceById_WithNonExistedId_ShouldReturnOK() {
         String deviceId = "test";
         var deleteResponse = deleteDeviceById(deviceId);
         assertEquals(HttpStatus.NO_CONTENT, deleteResponse.getStatusCode());
     }
 
     @Test
-    public void deleteDeviceById_WithDeviceCreated_ShouldDeleteFromDatabase_And_ShouldReturnOK() {
+    void deleteDeviceById_WithDeviceCreated_ShouldDeleteFromDatabase_And_ShouldReturnOK() {
         // Act
         String userAgentString = "Mozilla/5.0 (Macintosh; Intel Mac OS X 12_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/116.0.5845.110 Safari/537.36 Edg/116.0.1938.69";
 
         // 1 - Match Device and Check Device Exists After Creation
         var matchedDevice = matchDevice(userAgentString).getBody();
+        assertNotNull(matchedDevice);
         var currentDevice = getDeviceById(matchedDevice.getDeviceId()).getBody();
+        assertNotNull(currentDevice);
         assertEquals(matchedDevice.getDeviceId(), currentDevice.getDeviceId());
 
         // Delete created device profile

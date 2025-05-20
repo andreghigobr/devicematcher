@@ -6,11 +6,11 @@ import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @Tag("unit")
-public class DeviceProfileUserAgentIdGeneratorTest {
+class DeviceProfileUserAgentIdGeneratorTest {
     private final DeviceProfileIdGenerator idGenerator = new DeviceProfileUserAgentIdGenerator();
 
     @Test
-    public void deviceProfileId_withIphoneUserAgent() {
+    void deviceProfileId_withIphoneUserAgent() {
         var userAgent = UserAgent.create("iPhone", "15.0", "Safari", "15.0");
 
         var deviceId = idGenerator.newId(userAgent);
