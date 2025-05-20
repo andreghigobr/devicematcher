@@ -118,8 +118,8 @@ tasks.register('integrationTest', Test) {
 
 sonar {
     properties {
-        property "sonar.projectKey", "experian_devicematcher"
-        property "sonar.organization", "experian"
+        property "sonar.projectKey", "andreghigobr_devicematcher"
+        property "sonar.organization", "aghigo-github"
         property "sonar.host.url", "https://sonarcloud.io"
     }
 }
